@@ -10,8 +10,6 @@ from PySide6.QtWidgets import (
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 
-from src.client.ui.custom.message_label import MessageLabel
-
 from src.client.ui.custom.message_widget import MessageWidget
 
 from src.common.constants.constants import (
@@ -66,21 +64,12 @@ class UI(QMainWindow):
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     def add_message(self, sender, message):
-        message_label = MessageLabel(message, sender)
+        message_widget = MessageWidget(message, sender)
 
-        # Create a container layout to align the message bubble to the right
         container_layout = QHBoxLayout()
-
-        # Add a stretchable space before the message bubble to push it to the right
         container_layout.addStretch()
+        container_layout.addWidget(message_widget)
 
-        # Add the message bubble to the container layout
-        container_layout.addWidget(message_label)
-
-        # is_right = sender == "You"
-        # message_widget = MessageWidget(message, is_right)
-
-        # self.chat_layout.addWidget(message_widget)
         self.chat_layout.addLayout(container_layout)
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
