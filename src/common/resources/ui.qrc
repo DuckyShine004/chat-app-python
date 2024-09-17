@@ -2,4 +2,7 @@
   <qresource prefix="background">
     <file>ui/background/login.png</file>
   </qresource>
+  <qresource prefix="icons">
+    <file>ui/icons/user_profile.png</file>
+  </qresource>
 </RCC>

@@ -1,3 +1,4 @@
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -47,7 +48,9 @@ class UI(QMainWindow):
         self.stacked_widget.addWidget(self.chat_widget)
 
         self.chat.scrollArea.setWidgetResizable(True)
+
         self.chat_layout = QVBoxLayout(self.chat.scrollAreaWidgetContents)
+        self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         # self.chat_layout = QVBoxLayout()
 
         self.login.login_button.clicked.connect(self.handle_login)
@@ -65,12 +68,23 @@ class UI(QMainWindow):
 
     def add_message(self, sender, message):
         message_widget = MessageWidget(message, sender)
-
         container_layout = QHBoxLayout()
-        container_layout.addStretch()
-        container_layout.addWidget(message_widget)
+
+        if sender != "You":
+            container_layout.addWidget(message_widget)
+            container_layout.addStretch()
+        else:
+            container_layout.addStretch()
+            container_layout.addWidget(message_widget)
+
+        container_layout.setSpacing(0)
+        container_layout.setContentsMargins(0, 0, 0, 0)
 
         self.chat_layout.addLayout(container_layout)
+
+        self.chat_layout.setSpacing(0)
+        self.chat_layout.setContentsMargins(0, 0, 0, 0)
+
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
     def send_message(self):
@@ -103,7 +117,6 @@ class UI(QMainWindow):
     def show_chat_page(self):
         self.stacked_widget.setCurrentWidget(self.chat_widget)
 
-        for _ in range(2):
-            self.add_message(
-                "bruh", "fjksadlfjksladfjklsdajfdklasadhjfkjlsadhfjksdahkjfhsadkjfhsakjfhsajkdfhjksadf1hkjsdafhjksadhfjkashkfj"
-            )
+        for _ in range(5):
+            self.add_message("You", "brother I am not the one")
+            self.add_message("Bruh", "brother I am not the one that is everything that I have")
