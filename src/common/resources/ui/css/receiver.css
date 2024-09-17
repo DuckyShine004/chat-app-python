@@ -1,10 +1,12 @@
 QWidget {
-  background-color: #5e5ce6; /* Blue color */
+  background-color: #5542f6; /* Blue color */
   border-radius: 15px; /* Rounded corners */
   padding: 10px; /* Padding inside the bubble */
   color: white; /* Text color */
-  max-width: 460px; /* Max width for message bubble */
+  /* max-width: 860px; /1* Max width for message bubble *1/ */
 }
+
 QLabel {
   color: white; /* Text color for the message */
+  /* max-width: 860px; */
 }

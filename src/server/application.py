@@ -8,8 +8,6 @@ from src.client.client import Client
 
 from src.common.utilities.logger import Logger
 
-from src.common.constants.constants import WINDOW_TITLE
-
 
 class Application:
     def __init__(self):
@@ -19,15 +17,15 @@ class Application:
         self.ui = UI(self.client)
 
     def connect(self):
-        Logger.info("Client: Waiting for server to respond")
-
-        self.client.connect()
-
-        Logger.info("Client: Connected to the server!")
+        Logger.info("Client: Waiting for server to respond with id")
+        elapsed_time = self.client.connect()
+        Logger.info(f"Client: Connected to the server with id: {self.client.id}!")
+        Logger.info(f"Client: Connection took {elapsed_time} seconds")
 
     def run(self):
         self.connect()
         self.ui.show()
+
         self.quit()
 
     def quit(self):

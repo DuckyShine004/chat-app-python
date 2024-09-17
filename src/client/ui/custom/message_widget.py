@@ -12,23 +12,19 @@ class MessageWidget(QWidget):
 
         layout = QVBoxLayout()
         font = self.font()
-        self.setLayout(layout)
 
+        self.setLayout(layout)
         self.set_css(sender)
 
-        # self.message_label = QLabel(Utility.get_wrapped_text(message, font, 420))
-        self.message_label = QLabel(message)
+        self.message_label = QLabel(Utility.get_wrapped_text(message, font, 1000))
         self.message_label.setWordWrap(True)
         self.message_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        self.message_label.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred))
 
         layout.addWidget(self.message_label)
-        # layout.setAlignment(Qt.AlignmentFlag.AlignRight if sender == "You" else Qt.AlignmentFlag.AlignLeft)
         layout.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.setMaximumWidth(1000)  # Set maximum width
-        self.message_label.setMaximumWidth(1000)
 
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum))
-        self.message_label.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred))
+        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Minimum))
 
         self.adjustSize()
 

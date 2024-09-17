@@ -4,6 +4,15 @@ PATHS = {
     "resources": ["src", "common", "resources"],
 }
 
+CLIENT_TYPES = {
+    "assign_id",
+}
+
+SERVER_TYPES = {
+    "login",
+    "message",
+}
+
 WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720

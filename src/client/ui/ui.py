@@ -2,7 +2,10 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
+    QLabel,
+    QLayout,
     QMainWindow,
+    QSizePolicy,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
@@ -39,6 +42,8 @@ class UI(QMainWindow):
 
     def initialise(self):
         self.setWindowTitle(WINDOW_TITLE)
+        self.setFixedSize(WINDOW_WIDTH, WINDOW_HEIGHT)
+
         self.centre_window()
 
         self.login.setupUi(self.login_widget)
@@ -51,9 +56,12 @@ class UI(QMainWindow):
 
         self.chat_layout = QVBoxLayout(self.chat.scrollAreaWidgetContents)
         self.chat_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        # self.chat_layout = QVBoxLayout()
 
         self.login.login_button.clicked.connect(self.handle_login)
+        self.login.username_input.returnPressed.connect(self.handle_login)
+
+        self.chat.send_button.clicked.connect(self.handle_messaging)
+        self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
         self.show_login_page()
 
@@ -67,22 +75,31 @@ class UI(QMainWindow):
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     def add_message(self, sender, message):
+        entry_layout = QVBoxLayout()
+        entry_layout.setSpacing(0)
+
+        name_label = QLabel(sender)
+        name_label.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed))
+
         message_widget = MessageWidget(message, sender)
-        container_layout = QHBoxLayout()
+        message_layout = QHBoxLayout()
 
         if sender != "You":
-            container_layout.addWidget(message_widget)
-            container_layout.addStretch()
+            name_label.setStyleSheet("color: white; font-weight: bold; margin-left: 10px;")
+            entry_layout.addWidget(name_label, alignment=Qt.AlignmentFlag.AlignLeft)
+            message_layout.addWidget(message_widget)
+            message_layout.addStretch()
         else:
-            container_layout.addStretch()
-            container_layout.addWidget(message_widget)
+            name_label.setStyleSheet("color: white; font-weight: bold; margin-right: 10px;")
+            entry_layout.addWidget(name_label, alignment=Qt.AlignmentFlag.AlignRight)
+            message_layout.addStretch()
+            message_layout.addWidget(message_widget)
 
-        container_layout.setSpacing(0)
-        container_layout.setContentsMargins(0, 0, 0, 0)
+        entry_layout.addLayout(message_layout)
 
-        self.chat_layout.addLayout(container_layout)
+        self.chat_layout.addLayout(entry_layout)
 
-        self.chat_layout.setSpacing(0)
+        self.chat_layout.setSpacing(20)
         self.chat_layout.setContentsMargins(0, 0, 0, 0)
 
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
@@ -102,7 +119,7 @@ class UI(QMainWindow):
             self.handle_login_error()
             return
 
-        self.client.send(username)
+        self.client.send({"type": "login", "username": username})
         self.show_chat_page()
 
     def handle_login_error(self):
@@ -110,13 +127,23 @@ class UI(QMainWindow):
         self.login.login_title_label.move(480, 460)
         self.login.error_label.show()
 
+    def handle_messaging(self):
+        message = self.chat.message_input.text().strip()
+
+        if not message:
+            return
+
+        self.client.send(message)
+        self.chat.message_input.setText("")
+
     def show_login_page(self):
         self.login.error_label.hide()
         self.stacked_widget.setCurrentWidget(self.login_widget)
 
     def show_chat_page(self):
+        self.chat.send_icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.stacked_widget.setCurrentWidget(self.chat_widget)
 
         for _ in range(5):
-            self.add_message("You", "brother I am not the one")
+            self.add_message("You", "brother I am")
             self.add_message("Bruh", "brother I am not the one that is everything that I have")

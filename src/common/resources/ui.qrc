@@ -4,5 +4,6 @@
   </qresource>
   <qresource prefix="icons">
     <file>ui/icons/user_profile.png</file>
+    <file>ui/icons/send.png</file>
   </qresource>
 </RCC>
