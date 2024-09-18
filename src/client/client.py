@@ -55,6 +55,8 @@ class Client:
                 self.set_id(data["id"])
             case "message":
                 self.handle_sending_message(data["message"])
+            case "receive_message":
+                self.handle_receiving_message(data["message"])
             case "send_messages":
                 self.handle_sent_messages(data["messages"])
 
@@ -64,13 +66,18 @@ class Client:
     def handle_sending_message(self, message):
         self.send({"type": "message", "message": message})
 
+    def handle_receiving_message(self, message):
+        self.update_chat(message)
+
     def handle_sent_messages(self, messages):
         for message in messages:
-            username = message["username"]
-            content = message["message"]
-            print(username, content)
+            self.update_chat(message)
 
-            self.ui.new_message.emit(username, content)
+    def update_chat(self, message):
+        username = message["username"]
+        content = message["message"]
+
+        self.ui.new_message.emit(username, content)
 
     def receive(self):
         while True:

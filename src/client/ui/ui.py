@@ -82,7 +82,6 @@ class UI(QMainWindow):
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     def add_message(self, sender, message):
-        Logger.info(f"UI: Adding message from {sender}: {message}")
         entry_layout = QVBoxLayout()
         entry_layout.setSpacing(0)
 

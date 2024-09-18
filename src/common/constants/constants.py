@@ -7,6 +7,7 @@ PATHS = {
 CLIENT_TYPES = {
     "assign_id",
     "message",
+    "receive_message",
     "send_messages",
 }
 

@@ -53,21 +53,17 @@ class Server:
         self.clients[id]["username"] = username
 
     def handle_client_message(self, id, message):
-        if id == 1:
-            return
-
         serialised_message = {
             "username": self.clients[id]["username"],
             "message": message,
         }
 
-        self.clients[0]["messages"].append(serialised_message)
-
         if self.clients[1] is None:
+            self.clients[0]["messages"].append(serialised_message)
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
-        Logger.info(f"Server: Current messages sent by client {id}\n{self.clients[id]['messages']}")
+        self.send_message_to_client(id, message)
 
     def handle_receive_messages(self):
         self.send(
@@ -94,6 +90,16 @@ class Server:
 
         connection.close()
         Logger.info("Server: Closed client connection.")
+
+    def send_message_to_client(self, id, message):
+        receiver_id = id ^ 1
+        serialised_message = {
+            "username": self.clients[id]["username"],
+            "message": message,
+        }
+
+        data = {"type": "receive_message", "message": serialised_message}
+        self.send(self.clients[receiver_id]["connection"], data)
 
     def check_data_format(self, data):
         if not isinstance(data, dict):
