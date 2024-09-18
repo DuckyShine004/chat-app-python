@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
     QLabel,
-    QLayout,
     QMainWindow,
     QSizePolicy,
     QStackedWidget,
@@ -104,14 +103,6 @@ class UI(QMainWindow):
 
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
-    def send_message(self):
-        message = self.chat.message_input.text().strip()
-
-        if not message:
-            return
-
-        self.add_message("You", message)
-
     def handle_login(self):
         username = self.login.username_input.text().strip()
 
@@ -133,7 +124,9 @@ class UI(QMainWindow):
         if not message:
             return
 
-        self.client.send(message)
+        self.client.send({"type": "message", "message": message})
+
+        self.add_message("You", message)
         self.chat.message_input.setText("")
 
     def show_login_page(self):
@@ -143,7 +136,3 @@ class UI(QMainWindow):
     def show_chat_page(self):
         self.chat.send_icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.stacked_widget.setCurrentWidget(self.chat_widget)
-
-        for _ in range(5):
-            self.add_message("You", "brother I am")
-            self.add_message("Bruh", "brother I am not the one that is everything that I have")

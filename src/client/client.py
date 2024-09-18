@@ -52,9 +52,14 @@ class Client:
         match data["type"]:
             case "assign_id":
                 self.set_id(data["id"])
+            case "message":
+                self.handle_sending_message(data["message"])
 
     def set_id(self, id):
         self.id = id
+
+    def handle_sending_message(self, message):
+        self.send({"type": "message", "message": message})
 
     def receive(self):
         while True:

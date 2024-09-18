@@ -23,14 +23,13 @@ class Server:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = 0
-        self.clients = {}
+        self.clients = [None, None]
 
     def add_client(self, id, connection):
         self.clients[id] = {
             "connection": connection,
             "username": "",
-            "received_messages": [],
-            "sent_messages": [],
+            "messages": [],
         }
 
         self.send(connection, {"type": "assign_id", "id": id})
@@ -57,14 +56,18 @@ class Server:
         self.clients[id]["username"] = username
 
     def handle_client_message(self, id, message):
-        receiver_id = self.get_receiver_id(id)
+        serialised_message = {
+            "username": self.clients[id]["username"],
+            "message": message,
+        }
 
-        if receiver_id == -1:
+        self.clients[id]["messages"].append(serialised_message)
+
+        if self.clients[1] is None:
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
-        self.clients[id]
-        self.clients[receiver_id]["messages"].append(message)
+        Logger.info(f"Server: Current messages sent by client {id}\n{self.clients[id]['messages']}")
 
     def handle_client(self, id):
         connection = self.clients[id]["connection"]
@@ -141,7 +144,6 @@ class Server:
 
                 if self.id == 2:
                     Logger.error("Server: Only a maximum of two clients can be connected")
-                    pass
                     # continue
 
                 self.add_client(self.id, connection)
