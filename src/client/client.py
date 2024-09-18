@@ -22,6 +22,7 @@ class Client:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = -1
+        self.ui = None
 
     @Utility.timed_event()
     def connect(self):
@@ -54,12 +55,22 @@ class Client:
                 self.set_id(data["id"])
             case "message":
                 self.handle_sending_message(data["message"])
+            case "send_messages":
+                self.handle_sent_messages(data["messages"])
 
     def set_id(self, id):
         self.id = id
 
     def handle_sending_message(self, message):
         self.send({"type": "message", "message": message})
+
+    def handle_sent_messages(self, messages):
+        for message in messages:
+            username = message["username"]
+            content = message["message"]
+            print(username, content)
+
+            self.ui.new_message.emit(username, content)
 
     def receive(self):
         while True:

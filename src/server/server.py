@@ -29,8 +29,10 @@ class Server:
         self.clients[id] = {
             "connection": connection,
             "username": "",
-            "messages": [],
         }
+
+        if id == 0:
+            self.clients[id]["messages"] = []
 
         self.send(connection, {"type": "assign_id", "id": id})
         self.id += 1
@@ -38,36 +40,40 @@ class Server:
         thread = threading.Thread(target=self.handle_client, args=(id,))
         thread.start()
 
-    def get_receiver_id(self, id):
-        for client_id in self.clients:
-            if client_id != id:
-                return client_id
-
-        return -1
-
     def handle_client_data(self, id, data):
         match data["type"]:
             case "login":
                 self.handle_client_login(id, data["username"])
             case "message":
                 self.handle_client_message(id, data["message"])
+            case "receive_messages":
+                self.handle_receive_messages()
 
     def handle_client_login(self, id, username):
         self.clients[id]["username"] = username
 
     def handle_client_message(self, id, message):
+        if id == 1:
+            return
+
         serialised_message = {
             "username": self.clients[id]["username"],
             "message": message,
         }
 
-        self.clients[id]["messages"].append(serialised_message)
+        self.clients[0]["messages"].append(serialised_message)
 
         if self.clients[1] is None:
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
         Logger.info(f"Server: Current messages sent by client {id}\n{self.clients[id]['messages']}")
+
+    def handle_receive_messages(self):
+        self.send(
+            self.clients[1]["connection"],
+            {"type": "send_messages", "messages": self.clients[0]["messages"]},
+        )
 
     def handle_client(self, id):
         connection = self.clients[id]["connection"]

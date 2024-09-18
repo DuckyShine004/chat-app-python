@@ -6,11 +6,14 @@ PATHS = {
 
 CLIENT_TYPES = {
     "assign_id",
+    "message",
+    "send_messages",
 }
 
 SERVER_TYPES = {
     "login",
     "message",
+    "receive_messages",
 }
 
 WINDOW_TITLE = "Shiny Duck"

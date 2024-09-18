@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from src.common.utilities.logger import Logger
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 
@@ -23,10 +24,15 @@ from src.common.constants.constants import (
 
 
 class UI(QMainWindow):
+    new_message = Signal(str, str)
+
     def __init__(self, client):
         super().__init__()
 
         self.client = client
+        self.client.ui = self
+
+        self.messages = []
 
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -62,6 +68,8 @@ class UI(QMainWindow):
         self.chat.send_button.clicked.connect(self.handle_messaging)
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
+        self.new_message.connect(self.add_message)
+
         self.show_login_page()
 
     def centre_window(self):
@@ -74,6 +82,7 @@ class UI(QMainWindow):
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
     def add_message(self, sender, message):
+        Logger.info(f"UI: Adding message from {sender}: {message}")
         entry_layout = QVBoxLayout()
         entry_layout.setSpacing(0)
 
@@ -103,6 +112,12 @@ class UI(QMainWindow):
 
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
+    def handle_second_client(self):
+        if self.client.id == 0:
+            return
+
+        self.client.send({"type": "receive_messages"})
+
     def handle_login(self):
         username = self.login.username_input.text().strip()
 
@@ -111,6 +126,8 @@ class UI(QMainWindow):
             return
 
         self.client.send({"type": "login", "username": username})
+
+        self.handle_second_client()
         self.show_chat_page()
 
     def handle_login_error(self):
