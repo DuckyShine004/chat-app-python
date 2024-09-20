@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 from main import setup
 
+from src.server.database.database import Database
+
 from src.common.utilities.logger import Logger
 
 from src.common.constants.constants import HEADER_LENGTH, SERVER_TYPES
@@ -24,6 +26,7 @@ class Server:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = 0
         self.clients = [None, None]
+        self.database = None
 
     def add_client(self, id, connection):
         self.clients[id] = {
@@ -155,7 +158,9 @@ class Server:
     def start(self):
         Logger.info(f"Server: Listening for connections on {HOST}:{PORT}")
         self.socket.bind((HOST, PORT))
-        self.socket.listen()
+        self.socket.listen(2)
+
+        self.database = Database(HOST, PORT)
 
         try:
             while True:
