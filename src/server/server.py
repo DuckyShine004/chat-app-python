@@ -51,6 +51,7 @@ class Server:
 
     def handle_client_login(self, id, username):
         self.clients[id]["username"] = username
+        self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_message(self, id, message):
         serialised_message = {
@@ -100,6 +101,12 @@ class Server:
 
         data = {"type": "receive_message", "message": serialised_message}
         self.send(self.clients[receiver_id]["connection"], data)
+
+    def send_server_message_to_clients(self, message):
+        for client in self.clients:
+            if client is not None:
+                data = {"type": "server_message", "message": message}
+                self.send(client["connection"], data)
 
     def check_data_format(self, data):
         if not isinstance(data, dict):
@@ -156,14 +163,21 @@ class Server:
 
                 if self.id == 2:
                     Logger.error("Server: Only a maximum of two clients can be connected")
-                    # continue
+                    continue
 
                 self.add_client(self.id, connection)
                 Logger.info(f"Server: Client connection from {address}")
-
         finally:
-            self.socket.close()
-            Logger.info("Server: Socket closed.")
+            self.disconnect_all_connections()
+
+    def disconnect_all_connections(self):
+        for id, client in enumerate(self.clients):
+            if client is not None:
+                client["connection"].close()
+                Logger.info(f"Server: Client {id} disconnected")
+
+        self.socket.close()
+        Logger.info("Server: Server disconnected")
 
 
 if __name__ == "__main__":

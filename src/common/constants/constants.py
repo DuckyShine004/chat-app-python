@@ -9,6 +9,7 @@ CLIENT_TYPES = {
     "message",
     "receive_message",
     "send_messages",
+    "server_message",
 }
 
 SERVER_TYPES = {

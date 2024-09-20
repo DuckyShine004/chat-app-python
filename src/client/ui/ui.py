@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import QTimer, Qt, Signal
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -10,7 +10,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.common.utilities.logger import Logger
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 
@@ -25,6 +24,7 @@ from src.common.constants.constants import (
 
 class UI(QMainWindow):
     new_message = Signal(str, str)
+    new_server_message = Signal(str)
 
     def __init__(self, client):
         super().__init__()
@@ -69,6 +69,9 @@ class UI(QMainWindow):
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
         self.new_message.connect(self.add_message)
+        self.new_server_message.connect(self.add_server_message)
+
+        self.chat.scrollArea.verticalScrollBar().rangeChanged.connect(self.scroll_to_bottom)
 
         self.show_login_page()
 
@@ -105,11 +108,20 @@ class UI(QMainWindow):
         entry_layout.addLayout(message_layout)
 
         self.chat_layout.addLayout(entry_layout)
-
         self.chat_layout.setSpacing(20)
-        self.chat_layout.setContentsMargins(0, 0, 0, 0)
+        self.chat_layout.setContentsMargins(0, 10, 0, 0)
 
-        self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
+    def add_server_message(self, message):
+        server_message_label = QLabel(message)
+        server_message_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        server_message_label.setStyleSheet("color: #787b82; font-weight: bold;")
+
+        entry_layout = QVBoxLayout()
+        entry_layout.addWidget(server_message_label, alignment=Qt.AlignmentFlag.AlignCenter)
+
+        self.chat_layout.addLayout(entry_layout)
+        self.chat_layout.setSpacing(20)
+        self.chat_layout.setContentsMargins(0, 10, 0, 0)
 
     def handle_second_client(self):
         if self.client.id == 0:
@@ -144,6 +156,9 @@ class UI(QMainWindow):
 
         self.add_message("You", message)
         self.chat.message_input.setText("")
+
+    def scroll_to_bottom(self, min_val=None, max_val=None):
+        self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
     def show_login_page(self):
         self.login.error_label.hide()
