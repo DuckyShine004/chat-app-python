@@ -35,7 +35,7 @@ background-position: center; /* Centers the image */</string>
     <property name="geometry">
      <rect>
       <x>480</x>
-      <y>570</y>
+      <y>580</y>
       <width>320</width>
       <height>50</height>
      </rect>
@@ -104,6 +104,9 @@ QLineEdit:focus {
       <height>50</height>
      </rect>
     </property>
+    <property name="cursor">
+     <cursorShape>PointingHandCursor</cursorShape>
+    </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
     background-color: qlineargradient(
@@ -151,7 +154,7 @@ QPushButton:pressed {
     <property name="geometry">
      <rect>
       <x>480</x>
-      <y>510</y>
+      <y>520</y>
       <width>320</width>
       <height>50</height>
      </rect>
@@ -163,8 +166,6 @@ QPushButton:pressed {
     border-radius: 8px;  /* Rounded corners */
     padding: 8px;  /* Padding inside the input box */
     color: white;  /* Text color */
-    selection-background-color: rgba(52, 51, 67, 255); /* Selection background color */
-    selection-color: blue;  /* Selected text color */
 }
 
 QLineEdit:focus {
@@ -180,6 +181,70 @@ QLineEdit:focus {
      <string>Username</string>
     </property>
    </widget>
+   <widget class="QLabel" name="error_label">
+    <property name="geometry">
+     <rect>
+      <x>480</x>
+      <y>470</y>
+      <width>320</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: #f8d7da;
+color: #721c24;
+border-radius: 4px;
+padding: 5px;
+</string>
+    </property>
+    <property name="text">
+     <string>⚠️ Incorrect username or password. Try again.
+</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="sign_up_button">
+   <property name="geometry">
+    <rect>
+     <x>675</x>
+     <y>440</y>
+     <width>87</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QPushButton {
+    background-color: transparent; 
+    color: #ff6d79;  /* Set the text color to black */
+    border: none;  /* Remove the border if desired */
+}</string>
+   </property>
+   <property name="text">
+    <string>Sign up now</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>440</y>
+     <width>161</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: transparent;
+color: white;</string>
+   </property>
+   <property name="text">
+    <string>Don't have an account?</string>
+   </property>
   </widget>
  </widget>
  <resources>

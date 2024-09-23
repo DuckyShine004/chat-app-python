@@ -10,12 +10,8 @@ class Database:
 
     def __init__(self):
         self.database = unqlite.UnQLite(self.__DATABASE_FILE)
-        self.initialise()
 
-        self.create_user("Bob", "bruh")
-        self.output_collection("users")
-        self.clear_all_collections()
-        self.output_collection("users")
+        self.initialise()
 
     def initialise(self):
         self.database.collection("users").create()
@@ -28,6 +24,14 @@ class Database:
                 "username": username,
                 "password": hashed_password,
             }
+        )
+
+    def get_username(self, username):
+        return self.database.collection("users").filter(lambda user: user["username"])
+
+    def get_username_and_password(self, username, password):
+        return self.database.collection("users").filter(
+            lambda user: user["username"] == username and user["password"] == password
         )
 
     def output_collection(self, collection_name):

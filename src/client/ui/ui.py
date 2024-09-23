@@ -25,6 +25,7 @@ from src.common.constants.constants import (
 class UI(QMainWindow):
     new_message = Signal(str, str)
     new_server_message = Signal(str)
+    login_error = Signal(str)
 
     def __init__(self, client):
         super().__init__()
@@ -70,6 +71,7 @@ class UI(QMainWindow):
 
         self.new_message.connect(self.add_message)
         self.new_server_message.connect(self.add_server_message)
+        self.login_error.connect(self.handle_server_login)
 
         self.chat.scrollArea.verticalScrollBar().rangeChanged.connect(self.scroll_to_bottom)
 
@@ -131,20 +133,19 @@ class UI(QMainWindow):
 
     def handle_login(self):
         username = self.login.username_input.text().strip()
+        password = self.login.password_input.text().strip()
 
-        if not username:
-            self.handle_login_error()
+        self.client.send({"type": "login", "username": username, "password": password})
+
+    def handle_server_login(self, error=""):
+        if error:
+            self.login.error_label.setText(f"    {error}")
+            self.login.error_label.show()
+
             return
-
-        self.client.send({"type": "login", "username": username})
 
         self.handle_second_client()
         self.show_chat_page()
-
-    def handle_login_error(self):
-        self.login.username_input.move(480, 550)
-        self.login.login_title_label.move(480, 460)
-        self.login.error_label.show()
 
     def handle_messaging(self):
         message = self.chat.message_input.text().strip()

@@ -11,6 +11,7 @@ CLIENT_TYPES = {
     "receive_message",
     "send_messages",
     "server_message",
+    "server_login_error",
 }
 
 SERVER_TYPES = {

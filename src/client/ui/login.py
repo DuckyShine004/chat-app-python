@@ -56,12 +56,13 @@ class Ui_Login(object):
         self.widget.setStyleSheet(
             "background-image: url(:/background/ui/background/login.png);\n"
             "background-repeat: no-repeat; /* Prevents the image from repeating */\n"
+            "background-color: none;\n"
             "background-position: center; /* Centers the image */"
         )
-        self.username_input = QLineEdit(self.widget)
-        self.username_input.setObjectName("username_input")
-        self.username_input.setGeometry(QRect(480, 570, 320, 50))
-        self.username_input.setStyleSheet(
+        self.password_input = QLineEdit(self.widget)
+        self.password_input.setObjectName("password_input")
+        self.password_input.setGeometry(QRect(480, 580, 320, 50))
+        self.password_input.setStyleSheet(
             "QLineEdit {\n"
             "    background-color: #17171B;  /* Background color */\n"
             "    border: 2px solid rgba(52, 51, 67, 255);  /* Default border color */\n"
@@ -80,7 +81,7 @@ class Ui_Login(object):
         )
         self.login_title_label = QLabel(self.widget)
         self.login_title_label.setObjectName("login_title_label")
-        self.login_title_label.setGeometry(QRect(480, 480, 320, 50))
+        self.login_title_label.setGeometry(QRect(480, 410, 320, 50))
         self.login_title_label.setBaseSize(QSize(0, 0))
         self.login_title_label.setStyleSheet(
             "QLabel {\n"
@@ -95,6 +96,7 @@ class Ui_Login(object):
         self.login_button = QPushButton(self.widget)
         self.login_button.setObjectName("login_button")
         self.login_button.setGeometry(QRect(480, 640, 320, 50))
+        self.login_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.login_button.setStyleSheet(
             "QPushButton {\n"
             "    background-color: qlineargradient(\n"
@@ -135,18 +137,46 @@ class Ui_Login(object):
             "}\n"
             ""
         )
-        self.error_label = QLabel(self.widget)
-        self.error_label.setObjectName("error_label")
-        self.error_label.setEnabled(True)
-        self.error_label.setGeometry(QRect(480, 605, 160, 20))
-        self.error_label.setStyleSheet(
-            "QLabel {\n"
-            "    color: red;  /* Text color */\n"
-            "    font-size: 16px;  /* Font size */\n"
-            "	background-color: transparent;  /* Transparent background */\n"
+        self.username_input = QLineEdit(self.widget)
+        self.username_input.setObjectName("username_input")
+        self.username_input.setGeometry(QRect(480, 520, 320, 50))
+        self.username_input.setStyleSheet(
+            "QLineEdit {\n"
+            "    background-color: #17171B;  /* Background color */\n"
+            "    border: 2px solid rgba(52, 51, 67, 255);  /* Default border color */\n"
+            "    border-radius: 8px;  /* Rounded corners */\n"
+            "    padding: 8px;  /* Padding inside the input box */\n"
+            "    color: white;  /* Text color */\n"
+            "}\n"
+            "\n"
+            "QLineEdit:focus {\n"
+            "    border: 2px solid rgba(251, 109, 169, 255);  /* Border color on focus (gradient2) */\n"
+            "    outline: none;  /* Remove default outline */\n"
             "}\n"
             ""
         )
+        self.error_label = QLabel(self.widget)
+        self.error_label.setObjectName("error_label")
+        self.error_label.setGeometry(QRect(480, 470, 320, 30))
+        self.error_label.setStyleSheet(
+            "background-color: #f8d7da;\n" "color: #721c24;\n" "border-radius: 4px;\n" "padding: 5px;\n" ""
+        )
+        self.error_label.setAlignment(Qt.AlignLeading | Qt.AlignLeft | Qt.AlignVCenter)
+        self.sign_up_button = QPushButton(Login)
+        self.sign_up_button.setObjectName("sign_up_button")
+        self.sign_up_button.setGeometry(QRect(675, 440, 87, 27))
+        self.sign_up_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.sign_up_button.setStyleSheet(
+            "QPushButton {\n"
+            "    background-color: transparent; \n"
+            "    color: #ff6d79;  /* Set the text color to black */\n"
+            "    border: none;  /* Remove the border if desired */\n"
+            "}"
+        )
+        self.label_2 = QLabel(Login)
+        self.label_2.setObjectName("label_2")
+        self.label_2.setGeometry(QRect(520, 440, 161, 27))
+        self.label_2.setStyleSheet("background-color: transparent;\n" "color: white;")
 
         self.retranslateUi(Login)
 
@@ -156,10 +186,16 @@ class Ui_Login(object):
 
     def retranslateUi(self, Login):
         Login.setWindowTitle(QCoreApplication.translate("Login", "Form", None))
-        self.username_input.setText("")
-        self.username_input.setPlaceholderText(QCoreApplication.translate("Login", "Username", None))
+        self.password_input.setText("")
+        self.password_input.setPlaceholderText(QCoreApplication.translate("Login", "Password", None))
         self.login_title_label.setText(QCoreApplication.translate("Login", "WELCOME", None))
         self.login_button.setText(QCoreApplication.translate("Login", "Login", None))
-        self.error_label.setText(QCoreApplication.translate("Login", "Username is required", None))
+        self.username_input.setText("")
+        self.username_input.setPlaceholderText(QCoreApplication.translate("Login", "Username", None))
+        self.error_label.setText(
+            QCoreApplication.translate("Login", "\u26a0\ufe0f Incorrect username or password. Try again.\n" "", None)
+        )
+        self.sign_up_button.setText(QCoreApplication.translate("Login", "Sign up now", None))
+        self.label_2.setText(QCoreApplication.translate("Login", "Don't have an account?", None))
 
     # retranslateUi
