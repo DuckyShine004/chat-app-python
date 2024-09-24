@@ -1,5 +1,7 @@
 import unqlite
 
+from datetime import datetime
+
 from src.common.utilities.utility import Utility
 
 from src.common.constants.constants import COLLECTIONS, PATHS
@@ -20,11 +22,14 @@ class Database:
 
     def create_user(self, username, password):
         hashed_password = password
+        timestamp = datetime.now().isoformat()
 
         self.database.collection("users").store(
             {
                 "username": username,
                 "password": hashed_password,
+                "online": True,
+                "created_at": timestamp,
             }
         )
 

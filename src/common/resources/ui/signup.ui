@@ -47,8 +47,6 @@ background-position: center; /* Centers the image */</string>
     border-radius: 8px;  /* Rounded corners */
     padding: 8px;  /* Padding inside the input box */
     color: white;  /* Text color */
-    selection-background-color: rgba(52, 51, 67, 255); /* Selection background color */
-    selection-color: blue;  /* Selected text color */
 }
 
 QLineEdit:focus {

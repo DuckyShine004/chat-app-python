@@ -60,9 +60,14 @@ class Server:
             return
 
         hashed_password = password
+        users = self.database.get_username_and_password(username, hashed_password)
 
-        if len(self.database.get_username_and_password(username, hashed_password)) != 1:
+        if len(users) != 1:
             self.send_server_login_error(id, "Incorrect username or password")
+            return
+
+        if users[0]["online"]:
+            self.send_server_login_error(id, "User is already online")
             return
 
         self.send_server_login_error(id, "")

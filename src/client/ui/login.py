@@ -69,8 +69,6 @@ class Ui_Login(object):
             "    border-radius: 8px;  /* Rounded corners */\n"
             "    padding: 8px;  /* Padding inside the input box */\n"
             "    color: white;  /* Text color */\n"
-            "    selection-background-color: rgba(52, 51, 67, 255); /* Selection background color */\n"
-            "    selection-color: blue;  /* Selected text color */\n"
             "}\n"
             "\n"
             "QLineEdit:focus {\n"
@@ -178,6 +176,12 @@ class Ui_Login(object):
             "    background-color: transparent; \n"
             "    color: #ff6d79;  /* Set the text color to black */\n"
             "    border: none;  /* Remove the border if desired */\n"
+            "}\n"
+            "\n"
+            "QPushButton:hover {\n"
+            "	background-color: transparent; \n"
+            "	color: #ffaa8c;\n"
+            "	border: none;\n"
             "}"
         )
         self.label_2 = QLabel(Login)

@@ -69,8 +69,6 @@ class Ui_Signup(object):
             "    border-radius: 8px;  /* Rounded corners */\n"
             "    padding: 8px;  /* Padding inside the input box */\n"
             "    color: white;  /* Text color */\n"
-            "    selection-background-color: rgba(52, 51, 67, 255); /* Selection background color */\n"
-            "    selection-color: blue;  /* Selected text color */\n"
             "}\n"
             "\n"
             "QLineEdit:focus {\n"
