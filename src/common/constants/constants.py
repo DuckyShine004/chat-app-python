@@ -2,6 +2,7 @@
 PATHS = {
     "logs": [".cache", "logs"],
     "resources": ["src", "common", "resources"],
+    "database": ["src", "server", "database"],
 }
 
 CLIENT_TYPES = {
@@ -10,13 +11,18 @@ CLIENT_TYPES = {
     "receive_message",
     "send_messages",
     "server_message",
+    "server_login_error",
+    "server_signup_error",
 }
 
 SERVER_TYPES = {
     "login",
+    "client_signup",
     "message",
     "receive_messages",
 }
+
+COLLECTIONS = ["users"]
 
 WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280

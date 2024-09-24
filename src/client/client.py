@@ -40,11 +40,11 @@ class Client:
             return False
 
         if "type" not in data:
-            Logger.error("Server: 'type' is not present in data")
+            Logger.error("Client: 'type' is not present in data")
             return False
 
         if data["type"] not in CLIENT_TYPES:
-            Logger.error(f"Server: 'type': {data['type']} is not a valid type")
+            Logger.error(f"Client: 'type': {data['type']} is not a valid type")
             return False
 
         return True
@@ -61,6 +61,10 @@ class Client:
                 self.handle_server_message(data["message"])
             case "send_messages":
                 self.handle_sent_messages(data["messages"])
+            case "server_login_error":
+                self.handle_server_login_error(data["error"])
+            case "server_signup_error":
+                self.handle_server_signup_error(data["error"])
 
     def set_id(self, id):
         self.id = id
@@ -73,6 +77,12 @@ class Client:
 
     def handle_server_message(self, message):
         self.ui.new_server_message.emit(message)
+
+    def handle_server_login_error(self, error):
+        self.ui.login_error.emit(error)
+
+    def handle_server_signup_error(self, error):
+        self.ui.signup_error.emit(error)
 
     def handle_sent_messages(self, messages):
         for message in messages:
@@ -106,7 +116,7 @@ class Client:
             Logger.info(f"Client: Received message: {data}")
 
     def receive_all(self, length):
-        data = b""
+        data = bytearray()
 
         while len(data) < length:
             packet = self.socket.recv(length - len(data))
@@ -114,7 +124,7 @@ class Client:
             if not packet:
                 return None
 
-            data += packet
+            data.extend(packet)
 
         return data
 

@@ -3,6 +3,8 @@
     <file>ui/background/login.png</file>
   </qresource>
   <qresource prefix="icons">
+    <file>ui/icons/eye_closed.png</file>
+    <file>ui/icons/eye_opened.png</file>
     <file>ui/icons/user_profile.png</file>
     <file>ui/icons/send.png</file>
   </qresource>

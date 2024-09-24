@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Login</class>
- <widget class="QWidget" name="Login">
+ <class>Signup</class>
+ <widget class="QWidget" name="Signup">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -87,13 +87,13 @@ QLineEdit:focus {
 </string>
     </property>
     <property name="text">
-     <string>LOGIN</string>
+     <string>SIGN UP</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="login_button">
+   <widget class="QPushButton" name="sign_up_button">
     <property name="geometry">
      <rect>
       <x>480</x>
@@ -145,7 +145,7 @@ QPushButton:pressed {
 </string>
     </property>
     <property name="text">
-     <string>Login</string>
+     <string>Sign Up</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="username_input">
@@ -225,52 +225,6 @@ padding: 5px;
      <string/>
     </property>
    </widget>
-  </widget>
-  <widget class="QPushButton" name="sign_up_button">
-   <property name="geometry">
-    <rect>
-     <x>675</x>
-     <y>440</y>
-     <width>87</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="cursor">
-    <cursorShape>PointingHandCursor</cursorShape>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">QPushButton {
-    background-color: transparent; 
-    color: #ff6d79;  /* Set the text color to black */
-    border: none;  /* Remove the border if desired */
-}
-
-QPushButton:hover {
-	background-color: transparent; 
-	color: #ffaa8c;
-	border: none;
-}</string>
-   </property>
-   <property name="text">
-    <string>Sign up now</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>520</x>
-     <y>440</y>
-     <width>161</width>
-     <height>27</height>
-    </rect>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">background-color: transparent;
-color: white;</string>
-   </property>
-   <property name="text">
-    <string>Don't have an account?</string>
-   </property>
   </widget>
  </widget>
  <resources>

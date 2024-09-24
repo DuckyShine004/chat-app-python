@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 from main import setup
 
+from src.server.database.database import Database
+
 from src.common.utilities.logger import Logger
 
 from src.common.constants.constants import HEADER_LENGTH, SERVER_TYPES
@@ -24,6 +26,7 @@ class Server:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = 0
         self.clients = [None, None]
+        self.database = Database()
 
     def add_client(self, id, connection):
         self.clients[id] = {
@@ -43,13 +46,49 @@ class Server:
     def handle_client_data(self, id, data):
         match data["type"]:
             case "login":
-                self.handle_client_login(id, data["username"])
+                self.handle_client_login(id, data["username"], data["password"])
+            case "client_signup":
+                self.handle_client_signup(id, data["username"], data["password"])
             case "message":
                 self.handle_client_message(id, data["message"])
             case "receive_messages":
                 self.handle_receive_messages()
 
-    def handle_client_login(self, id, username):
+    def handle_client_login(self, id, username, password):
+        if not (username and password):
+            self.send_server_login_error(id, "Username and password are required")
+            return
+
+        hashed_password = password
+        users = self.database.get_username_and_password(username, hashed_password)
+
+        if len(users) != 1:
+            self.send_server_login_error(id, "Incorrect username or password")
+            return
+
+        if users[0]["online"]:
+            self.send_server_login_error(id, "User is already online")
+            return
+
+        self.send_server_login_error(id, "")
+
+        self.clients[id]["username"] = username
+        self.send_server_message_to_clients(f"{username} joined the chat")
+
+    def handle_client_signup(self, id, username, password):
+        if not (username and password):
+            self.send_server_signup_error(id, "Username and password are required")
+            return
+
+        if len(self.database.get_username(username)) == 1:
+            self.send_server_signup_error(id, "Username must be unique")
+            return
+
+        hashed_password = password
+
+        self.database.create_user(username, hashed_password)
+        self.send_server_signup_error(id, "")
+
         self.clients[id]["username"] = username
         self.send_server_message_to_clients(f"{username} joined the chat")
 
@@ -91,6 +130,14 @@ class Server:
 
         connection.close()
         Logger.info("Server: Closed client connection.")
+
+    def send_server_login_error(self, id, error):
+        data = {"type": "server_login_error", "error": error}
+        self.send(self.clients[id]["connection"], data)
+
+    def send_server_signup_error(self, id, error):
+        data = {"type": "server_signup_error", "error": error}
+        self.send(self.clients[id]["connection"], data)
 
     def send_message_to_client(self, id, message):
         receiver_id = id ^ 1
@@ -134,7 +181,7 @@ class Server:
         return self.receive_all(connection, length)
 
     def receive_all(self, connection, length):
-        data = b""
+        data = bytearray()
 
         while len(data) < length:
             packet = connection.recv(length - len(data))
@@ -142,7 +189,7 @@ class Server:
             if not packet:
                 return None
 
-            data += packet
+            data.extend(packet)
 
         return data
 
@@ -155,7 +202,7 @@ class Server:
     def start(self):
         Logger.info(f"Server: Listening for connections on {HOST}:{PORT}")
         self.socket.bind((HOST, PORT))
-        self.socket.listen()
+        self.socket.listen(2)
 
         try:
             while True:
