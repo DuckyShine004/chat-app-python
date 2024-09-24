@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'login.ui'
+## Form generated from reading UI file 'signup.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.7.2
 ##
@@ -44,13 +44,13 @@ from PySide6.QtWidgets import QApplication, QLabel, QLineEdit, QPushButton, QSiz
 from src.common.resources import ui_rc
 
 
-class Ui_Login(object):
-    def setupUi(self, Login):
-        if not Login.objectName():
-            Login.setObjectName("Login")
-        Login.resize(1280, 720)
-        Login.setStyleSheet("background-color: #17171B;")
-        self.widget = QWidget(Login)
+class Ui_Signup(object):
+    def setupUi(self, Signup):
+        if not Signup.objectName():
+            Signup.setObjectName("Signup")
+        Signup.resize(1280, 720)
+        Signup.setStyleSheet("background-color: #17171B;")
+        self.widget = QWidget(Signup)
         self.widget.setObjectName("widget")
         self.widget.setGeometry(QRect(0, -250, 1280, 720))
         self.widget.setStyleSheet(
@@ -93,11 +93,11 @@ class Ui_Login(object):
             ""
         )
         self.login_title_label.setAlignment(Qt.AlignCenter)
-        self.login_button = QPushButton(self.widget)
-        self.login_button.setObjectName("login_button")
-        self.login_button.setGeometry(QRect(480, 640, 320, 50))
-        self.login_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.login_button.setStyleSheet(
+        self.sign_up_button = QPushButton(self.widget)
+        self.sign_up_button.setObjectName("sign_up_button")
+        self.sign_up_button.setGeometry(QRect(480, 640, 320, 50))
+        self.sign_up_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.sign_up_button.setStyleSheet(
             "QPushButton {\n"
             "    background-color: qlineargradient(\n"
             "        spread:pad, \n"
@@ -169,41 +169,24 @@ class Ui_Login(object):
         self.eye_icon.setStyleSheet(
             "QLabel {\n" "	image: url(:/icons/ui/icons/eye_closed.png);\n" "	background-color: transparent;\n" "}"
         )
-        self.sign_up_button = QPushButton(Login)
-        self.sign_up_button.setObjectName("sign_up_button")
-        self.sign_up_button.setGeometry(QRect(675, 440, 87, 27))
-        self.sign_up_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.sign_up_button.setStyleSheet(
-            "QPushButton {\n"
-            "    background-color: transparent; \n"
-            "    color: #ff6d79;  /* Set the text color to black */\n"
-            "    border: none;  /* Remove the border if desired */\n"
-            "}"
-        )
-        self.label_2 = QLabel(Login)
-        self.label_2.setObjectName("label_2")
-        self.label_2.setGeometry(QRect(520, 440, 161, 27))
-        self.label_2.setStyleSheet("background-color: transparent;\n" "color: white;")
 
-        self.retranslateUi(Login)
+        self.retranslateUi(Signup)
 
-        QMetaObject.connectSlotsByName(Login)
+        QMetaObject.connectSlotsByName(Signup)
 
     # setupUi
 
-    def retranslateUi(self, Login):
-        Login.setWindowTitle(QCoreApplication.translate("Login", "Form", None))
+    def retranslateUi(self, Signup):
+        Signup.setWindowTitle(QCoreApplication.translate("Signup", "Form", None))
         self.password_input.setText("")
-        self.password_input.setPlaceholderText(QCoreApplication.translate("Login", "Password", None))
-        self.login_title_label.setText(QCoreApplication.translate("Login", "LOGIN", None))
-        self.login_button.setText(QCoreApplication.translate("Login", "Login", None))
+        self.password_input.setPlaceholderText(QCoreApplication.translate("Signup", "Password", None))
+        self.login_title_label.setText(QCoreApplication.translate("Signup", "SIGN UP", None))
+        self.sign_up_button.setText(QCoreApplication.translate("Signup", "Sign Up", None))
         self.username_input.setText("")
-        self.username_input.setPlaceholderText(QCoreApplication.translate("Login", "Username", None))
+        self.username_input.setPlaceholderText(QCoreApplication.translate("Signup", "Username", None))
         self.error_label.setText(
-            QCoreApplication.translate("Login", "\u26a0\ufe0f Incorrect username or password. Try again.\n" "", None)
+            QCoreApplication.translate("Signup", "\u26a0\ufe0f Incorrect username or password. Try again.\n" "", None)
         )
         self.eye_icon.setText("")
-        self.sign_up_button.setText(QCoreApplication.translate("Login", "Sign up now", None))
-        self.label_2.setText(QCoreApplication.translate("Login", "Don't have an account?", None))
 
     # retranslateUi

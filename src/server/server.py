@@ -47,6 +47,8 @@ class Server:
         match data["type"]:
             case "login":
                 self.handle_client_login(id, data["username"], data["password"])
+            case "client_signup":
+                self.handle_client_signup(id, data["username"], data["password"])
             case "message":
                 self.handle_client_message(id, data["message"])
             case "receive_messages":
@@ -62,6 +64,25 @@ class Server:
         if len(self.database.get_username_and_password(username, hashed_password)) != 1:
             self.send_server_login_error(id, "Incorrect username or password")
             return
+
+        self.send_server_login_error(id, "")
+
+        self.clients[id]["username"] = username
+        self.send_server_message_to_clients(f"{username} joined the chat")
+
+    def handle_client_signup(self, id, username, password):
+        if not (username and password):
+            self.send_server_signup_error(id, "Username and password are required")
+            return
+
+        if len(self.database.get_username(username)) == 1:
+            self.send_server_signup_error(id, "Username must be unique")
+            return
+
+        hashed_password = password
+
+        self.database.create_user(username, hashed_password)
+        self.send_server_signup_error(id, "")
 
         self.clients[id]["username"] = username
         self.send_server_message_to_clients(f"{username} joined the chat")
@@ -109,6 +130,10 @@ class Server:
         data = {"type": "server_login_error", "error": error}
         self.send(self.clients[id]["connection"], data)
 
+    def send_server_signup_error(self, id, error):
+        data = {"type": "server_signup_error", "error": error}
+        self.send(self.clients[id]["connection"], data)
+
     def send_message_to_client(self, id, message):
         receiver_id = id ^ 1
         serialised_message = {
@@ -151,7 +176,7 @@ class Server:
         return self.receive_all(connection, length)
 
     def receive_all(self, connection, length):
-        data = b""
+        data = bytearray()
 
         while len(data) < length:
             packet = connection.recv(length - len(data))
@@ -159,7 +184,7 @@ class Server:
             if not packet:
                 return None
 
-            data += packet
+            data.extend(packet)
 
         return data
 

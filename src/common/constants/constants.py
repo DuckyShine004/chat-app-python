@@ -12,10 +12,12 @@ CLIENT_TYPES = {
     "send_messages",
     "server_message",
     "server_login_error",
+    "server_signup_error",
 }
 
 SERVER_TYPES = {
     "login",
+    "client_signup",
     "message",
     "receive_messages",
 }

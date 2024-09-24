@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QMainWindow,
     QSizePolicy,
     QStackedWidget,
@@ -10,6 +11,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from src.client.ui.custom.toggle_label import ToggleLabel
+from src.client.ui.signup import Ui_Signup
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 
@@ -26,6 +29,7 @@ class UI(QMainWindow):
     new_message = Signal(str, str)
     new_server_message = Signal(str)
     login_error = Signal(str)
+    signup_error = Signal(str)
 
     def __init__(self, client):
         super().__init__()
@@ -38,11 +42,16 @@ class UI(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        self.login_widget = QWidget()
         self.login = Ui_Login()
+        self.login_widget = QWidget()
 
         self.chat = Ui_Chat()
         self.chat_widget = QWidget()
+
+        self.signup = Ui_Signup()
+        self.signup_widget = QWidget()
+
+        self.is_password_visible = 0
 
         self.initialise()
 
@@ -54,9 +63,11 @@ class UI(QMainWindow):
 
         self.login.setupUi(self.login_widget)
         self.chat.setupUi(self.chat_widget)
+        self.signup.setupUi(self.signup_widget)
 
         self.stacked_widget.addWidget(self.login_widget)
         self.stacked_widget.addWidget(self.chat_widget)
+        self.stacked_widget.addWidget(self.signup_widget)
 
         self.chat.scrollArea.setWidgetResizable(True)
 
@@ -65,6 +76,17 @@ class UI(QMainWindow):
 
         self.login.login_button.clicked.connect(self.handle_login)
         self.login.username_input.returnPressed.connect(self.handle_login)
+        self.login.password_input.returnPressed.connect(self.handle_login)
+        self.login.password_input.setEchoMode(QLineEdit.Password)
+        self.login.sign_up_button.clicked.connect(self.show_signup_page)
+
+        self.signup.sign_up_button.clicked.connect(self.handle_signup)
+        self.signup.username_input.returnPressed.connect(self.handle_signup)
+        self.signup.password_input.returnPressed.connect(self.handle_signup)
+        self.signup.password_input.setEchoMode(QLineEdit.Password)
+
+        self.signup.eye_icon.mousePressEvent = self.toggle_signup_password_visibility
+        self.login.eye_icon.mousePressEvent = self.toggle_login_password_visibility
 
         self.chat.send_button.clicked.connect(self.handle_messaging)
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
@@ -72,6 +94,12 @@ class UI(QMainWindow):
         self.new_message.connect(self.add_message)
         self.new_server_message.connect(self.add_server_message)
         self.login_error.connect(self.handle_server_login)
+        self.login.password_input.setTextMargins(0, 0, 35, 0)
+        self.signup_error.connect(self.handle_server_signup)
+        self.signup.password_input.setTextMargins(0, 0, 35, 0)
+
+        self.login.error_label.hide()
+        self.signup.error_label.hide()
 
         self.chat.scrollArea.verticalScrollBar().rangeChanged.connect(self.scroll_to_bottom)
 
@@ -137,15 +165,32 @@ class UI(QMainWindow):
 
         self.client.send({"type": "login", "username": username, "password": password})
 
+    def handle_signup(self):
+        username = self.signup.username_input.text().strip()
+        password = self.signup.password_input.text().strip()
+
+        self.client.send({"type": "client_signup", "username": username, "password": password})
+
     def handle_server_login(self, error=""):
+        print(f"Server error: {error}")
         if error:
             self.login.error_label.setText(f"    {error}")
             self.login.error_label.show()
 
             return
 
-        self.handle_second_client()
         self.show_chat_page()
+        self.handle_second_client()
+
+    def handle_server_signup(self, error=""):
+        if error:
+            self.signup.error_label.setText(f"    {error}")
+            self.signup.error_label.show()
+
+            return
+
+        self.show_chat_page()
+        self.handle_second_client()
 
     def handle_messaging(self):
         message = self.chat.message_input.text().strip()
@@ -158,13 +203,39 @@ class UI(QMainWindow):
         self.add_message("You", message)
         self.chat.message_input.setText("")
 
+    def toggle_login_password_visibility(self, event):
+        icons = [":/icons/ui/icons/eye_closed.png", ":/icons/ui/icons/eye_opened.png"]
+        self.is_password_visible ^= 1
+        current_icon = icons[self.is_password_visible]
+        self.login.eye_icon.setStyleSheet(f"QLabel {{ image: url({current_icon}); background-color: transparent; }}")
+
+        if self.is_password_visible:
+            self.login.password_input.setEchoMode(QLineEdit.Normal)
+        else:
+            self.login.password_input.setEchoMode(QLineEdit.Password)
+
+    def toggle_signup_password_visibility(self, event):
+        icons = [":/icons/ui/icons/eye_closed.png", ":/icons/ui/icons/eye_opened.png"]
+        self.is_password_visible ^= 1
+        current_icon = icons[self.is_password_visible]
+        self.signup.eye_icon.setStyleSheet(f"QLabel {{ image: url({current_icon}); background-color: transparent; }}")
+
+        if self.is_password_visible:
+            self.signup.password_input.setEchoMode(QLineEdit.Normal)
+        else:
+            self.signup.password_input.setEchoMode(QLineEdit.Password)
+
     def scroll_to_bottom(self, min_val=None, max_val=None):
         self.chat.scrollArea.verticalScrollBar().setValue(self.chat.scrollArea.verticalScrollBar().maximum())
 
     def show_login_page(self):
-        self.login.error_label.hide()
         self.stacked_widget.setCurrentWidget(self.login_widget)
 
     def show_chat_page(self):
         self.chat.send_icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+        print("bruh")
         self.stacked_widget.setCurrentWidget(self.chat_widget)
+
+    def show_signup_page(self):
+        self.is_password_visible = 0
+        self.stacked_widget.setCurrentWidget(self.signup_widget)
