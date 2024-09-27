@@ -11,6 +11,7 @@ from main import setup
 from src.server.database.database import Database
 
 from src.common.utilities.logger import Logger
+from src.common.utilities.security import Security
 
 from src.common.constants.constants import HEADER_LENGTH, SERVER_TYPES
 
@@ -21,12 +22,15 @@ HOST = os.getenv("SERVER_HOST")
 PORT = int(os.getenv("SERVER_PORT"))
 
 
+# Suppose we are retrieving using a key store like Amazon KMS
 class Server:
     def __init__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.id = 0
         self.clients = [None, None]
         self.database = Database()
+        self.private_key = Security.get_key(is_private=True, is_server=True)
+        self.public_key = Security.get_key(is_private=False, is_server=True)
 
     def add_client(self, id, connection):
         self.clients[id] = {
@@ -203,6 +207,11 @@ class Server:
         Logger.info(f"Server: Listening for connections on {HOST}:{PORT}")
         self.socket.bind((HOST, PORT))
         self.socket.listen(2)
+
+        Logger.info("Server: Generating RSA keys")
+        for i in range(2):
+            Security.generate_rsa_keys(is_server=bool(i))
+        Logger.info("Server: Generated RSA keys")
 
         try:
             while True:

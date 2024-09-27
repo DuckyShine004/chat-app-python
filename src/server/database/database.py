@@ -1,6 +1,6 @@
-import unqlite
-
 from datetime import datetime
+
+import unqlite
 
 from src.common.utilities.utility import Utility
 
@@ -21,17 +21,18 @@ class Database:
         self.database.collection("users").create()
 
     def create_user(self, username, password):
-        hashed_password = password
         timestamp = datetime.now().isoformat()
 
         self.database.collection("users").store(
             {
                 "username": username,
-                "password": hashed_password,
+                "password": password,
                 "online": True,
                 "created_at": timestamp,
             }
         )
+
+        self.output_collection("users")
 
     def get_username(self, username):
         return self.database.collection("users").filter(lambda user: user["username"] == username)

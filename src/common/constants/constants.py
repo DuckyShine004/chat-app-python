@@ -3,6 +3,7 @@ PATHS = {
     "logs": [".cache", "logs"],
     "resources": ["src", "common", "resources"],
     "database": ["src", "server", "database"],
+    "keys": [".cache", "keys"],
 }
 
 CLIENT_TYPES = {
@@ -27,6 +28,8 @@ COLLECTIONS = ["users"]
 WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
+
+KEY_LENGTH = 1 << 11
 
 # COLOURS
 RED = (255, 0, 0)
