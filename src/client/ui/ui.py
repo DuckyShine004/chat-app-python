@@ -25,8 +25,7 @@ from src.common.constants.constants import (
 
 
 class UI(QMainWindow):
-    new_message = Signal(str, str)
-    new_server_message = Signal(str)
+    new_message = Signal(str, dict)
     login_error = Signal(str)
     signup_error = Signal(str)
 
@@ -91,7 +90,6 @@ class UI(QMainWindow):
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
         self.new_message.connect(self.add_message)
-        self.new_server_message.connect(self.add_server_message)
         self.login_error.connect(self.handle_server_login)
         self.login.password_input.setTextMargins(0, 0, 35, 0)
         self.signup_error.connect(self.handle_server_signup)
@@ -113,7 +111,13 @@ class UI(QMainWindow):
 
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    def add_message(self, sender, message):
+    def add_message(self, role, message):
+        if role == "client":
+            self.add_client_message(message["username"], message["content"])
+        else:
+            self.add_server_message(message["content"])
+
+    def add_client_message(self, sender, message):
         entry_layout = QVBoxLayout()
         entry_layout.setSpacing(0)
 
@@ -199,7 +203,7 @@ class UI(QMainWindow):
 
         self.client.send({"type": "message", "message": message})
 
-        self.add_message("You", message)
+        self.add_client_message("You", message)
         self.chat.message_input.setText("")
 
     def toggle_login_password_visibility(self, event):

@@ -87,7 +87,7 @@ class Client:
         self.update_chat(message)
 
     def handle_server_message(self, message):
-        self.ui.new_server_message.emit(message)
+        self.update_chat(message)
 
     def handle_server_login_error(self, error):
         self.ui.login_error.emit(error)
@@ -100,10 +100,7 @@ class Client:
             self.update_chat(message)
 
     def update_chat(self, message):
-        username = message["username"]
-        content = message["message"]
-
-        self.ui.new_message.emit(username, content)
+        self.ui.new_message.emit(message["role"], message)
 
     def receive(self):
         while True:

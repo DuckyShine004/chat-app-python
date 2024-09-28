@@ -11,6 +11,8 @@ from main import setup
 
 from src.server.database.database import Database
 
+from src.server.resource.resource import Resource
+
 from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
 from src.common.utilities.security import Security
@@ -45,13 +47,7 @@ class Server:
         return context.wrap_socket(unsecure_socket)
 
     def add_client(self, id, connection):
-        self.clients[id] = {
-            "connection": connection,
-            "username": None,
-        }
-
-        if id == 0:
-            self.clients[id]["messages"] = []
+        self.clients[id] = Resource(connection)
 
         self.send(connection, {"type": "assign_id", "id": id})
         self.id += 1
@@ -76,7 +72,6 @@ class Server:
             return
 
         users = self.database.get_username_and_password(username, password)
-        print("users:", users)
 
         if not users:
             self.send_server_login_error(id, "Incorrect username or password")
@@ -88,7 +83,7 @@ class Server:
 
         self.send_server_login_error(id, "")
 
-        self.clients[id]["username"] = username
+        self.clients[id].username = username
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_signup(self, id, username, password):
@@ -96,7 +91,7 @@ class Server:
             self.send_server_signup_error(id, "Username and password are required")
             return
 
-        if len(self.database.get_username(username)) == 1:
+        if self.database.get_username(username):
             self.send_server_signup_error(id, "Username must be unique")
             return
 
@@ -105,30 +100,23 @@ class Server:
         self.database.create_user(username, password)
         self.send_server_signup_error(id, "")
 
-        self.clients[id]["username"] = username
+        self.clients[id].username = username
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_message(self, id, message):
-        serialised_message = {
-            "username": self.clients[id]["username"],
-            "message": message,
-        }
-
         if self.clients[1] is None:
-            self.clients[0]["messages"].append(serialised_message)
+            self.database.create_message("client", self.clients[id].username, message)
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
         self.send_message_to_client(id, message)
 
     def handle_receive_messages(self):
-        self.send(
-            self.clients[1]["connection"],
-            {"type": "send_messages", "messages": self.clients[0]["messages"]},
-        )
+        data = {"type": "send_messages", "messages": self.database.get_messages()}
+        self.send(self.clients[1].connection, data)
 
     def handle_client(self, id):
-        connection = self.clients[id]["connection"]
+        connection = self.clients[id].connection
 
         while True:
             data = self.receive(connection)
@@ -149,27 +137,36 @@ class Server:
 
     def send_server_login_error(self, id, error):
         data = {"type": "server_login_error", "error": error}
-        self.send(self.clients[id]["connection"], data)
+        self.send(self.clients[id].connection, data)
 
     def send_server_signup_error(self, id, error):
         data = {"type": "server_signup_error", "error": error}
-        self.send(self.clients[id]["connection"], data)
+        self.send(self.clients[id].connection, data)
 
     def send_message_to_client(self, id, message):
         receiver_id = id ^ 1
+
         serialised_message = {
-            "username": self.clients[id]["username"],
-            "message": message,
+            "role": "client",
+            "username": self.clients[id].username,
+            "content": message,
         }
 
         data = {"type": "receive_message", "message": serialised_message}
-        self.send(self.clients[receiver_id]["connection"], data)
+        self.send(self.clients[receiver_id].connection, data)
 
     def send_server_message_to_clients(self, message):
+        self.database.create_message("server", "", message)
+
         for client in self.clients:
             if client is not None:
-                data = {"type": "server_message", "message": message}
-                self.send(client["connection"], data)
+                serialised_message = {
+                    "role": "server",
+                    "content": message,
+                }
+
+                data = {"type": "server_message", "message": serialised_message}
+                self.send(client.connection, data)
 
     def check_data_format(self, data):
         if not isinstance(data, dict):
@@ -236,7 +233,7 @@ class Server:
     def disconnect_all_connections(self):
         for id, client in enumerate(self.clients):
             if client is not None:
-                client["connection"].close()
+                client.connection.close()
                 Logger.info(f"Server: Client {id} disconnected")
 
         self.socket.close()

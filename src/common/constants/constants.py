@@ -24,12 +24,13 @@ SERVER_TYPES = {
     "receive_messages",
 }
 
-COLLECTIONS = ["users"]
+COLLECTIONS = ["users", "messages"]
 
 WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
+# RSA
 KEY_LENGTH = 1 << 11
 CIPHER = "AES128-SHA"
 
