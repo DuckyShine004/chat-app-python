@@ -3,6 +3,7 @@ from datetime import datetime
 import unqlite
 
 from src.common.utilities.utility import Utility
+from src.common.utilities.security import Security
 
 from src.common.constants.constants import COLLECTIONS, PATHS
 
@@ -34,12 +35,14 @@ class Database:
 
         self.output_collection("users")
 
+    def create_message(self): ...
+
     def get_username(self, username):
         return self.database.collection("users").filter(lambda user: user["username"] == username)
 
     def get_username_and_password(self, username, password):
         return self.database.collection("users").filter(
-            lambda user: user["username"] == username and user["password"] == password
+            lambda user: user["username"] == username and Security.check_password(password, user["password"])
         )
 
     def output_collection(self, collection_name):
@@ -48,7 +51,3 @@ class Database:
     def clear_all_collections(self):
         for collection in COLLECTIONS:
             self.database.collection(collection).drop()
-
-
-if __name__ == "__main__":
-    database = Database()

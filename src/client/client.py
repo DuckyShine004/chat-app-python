@@ -1,4 +1,5 @@
 import os
+import ssl
 import time
 import json
 import socket
@@ -10,7 +11,7 @@ from dotenv import load_dotenv
 from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
 
-from src.common.constants.constants import CLIENT_TYPES, HEADER_LENGTH
+from src.common.constants.constants import CLIENT_TYPES, HEADER_LENGTH, PATHS
 
 load_dotenv()
 
@@ -19,10 +20,20 @@ PORT = int(os.getenv("CLIENT_PORT"))
 
 
 class Client:
+    __CERTIFICATE = Utility.get_path(PATHS["certificates"], ["server.crt"])
+
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = self.get_socket()
         self.id = -1
         self.ui = None
+
+    def get_socket(self):
+        unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.load_verify_locations(self.__CERTIFICATE)
+
+        return context.wrap_socket(unsecure_socket, server_hostname=HOST)
 
     @Utility.timed_event()
     def connect(self):
@@ -36,7 +47,7 @@ class Client:
 
     def check_data_format(self, data):
         if not isinstance(data, dict):
-            Logger.error("Client: data is not in the correct format")
+            Logger.error("Client: Data is not in the correct format")
             return False
 
         if "type" not in data:
@@ -110,7 +121,7 @@ class Client:
             data = json.loads(message.decode("utf-8"))
 
             if not self.check_data_format(data):
-                return
+                break
 
             self.handle_server_data(data)
             Logger.info(f"Client: Received message: {data}")

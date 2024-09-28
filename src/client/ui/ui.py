@@ -11,10 +11,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.client.ui.custom.toggle_label import ToggleLabel
-from src.client.ui.signup import Ui_Signup
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
+from src.client.ui.signup import Ui_Signup
 
 from src.client.ui.custom.message_widget import MessageWidget
 

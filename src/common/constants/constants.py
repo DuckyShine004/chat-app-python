@@ -4,6 +4,7 @@ PATHS = {
     "resources": ["src", "common", "resources"],
     "database": ["src", "server", "database"],
     "keys": [".cache", "keys"],
+    "certificates": [".cache", "certificates"],
 }
 
 CLIENT_TYPES = {
@@ -30,6 +31,7 @@ WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
 KEY_LENGTH = 1 << 11
+CIPHER = "AES128-SHA"
 
 # COLOURS
 RED = (255, 0, 0)

@@ -1,4 +1,5 @@
 import os
+import ssl
 import json
 import struct
 import socket
@@ -11,9 +12,10 @@ from main import setup
 from src.server.database.database import Database
 
 from src.common.utilities.logger import Logger
+from src.common.utilities.utility import Utility
 from src.common.utilities.security import Security
 
-from src.common.constants.constants import HEADER_LENGTH, SERVER_TYPES
+from src.common.constants.constants import CIPHER, HEADER_LENGTH, PATHS, SERVER_TYPES
 
 
 load_dotenv()
@@ -24,18 +26,28 @@ PORT = int(os.getenv("SERVER_PORT"))
 
 # Suppose we are retrieving using a key store like Amazon KMS
 class Server:
+    __CERTIFICATE = Utility.get_path(PATHS["certificates"], ["server.crt"])
+    __KEY = Utility.get_path(PATHS["keys"], ["server.key"])
+
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = self.get_socket()
         self.id = 0
         self.clients = [None, None]
         self.database = Database()
-        self.private_key = Security.get_key(is_private=True, is_server=True)
-        self.public_key = Security.get_key(is_private=False, is_server=True)
+
+    def get_socket(self):
+        unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=self.__CERTIFICATE, keyfile=self.__KEY)
+        context.set_ciphers(CIPHER)
+
+        return context.wrap_socket(unsecure_socket)
 
     def add_client(self, id, connection):
         self.clients[id] = {
             "connection": connection,
-            "username": "",
+            "username": None,
         }
 
         if id == 0:
@@ -63,10 +75,10 @@ class Server:
             self.send_server_login_error(id, "Username and password are required")
             return
 
-        hashed_password = password
-        users = self.database.get_username_and_password(username, hashed_password)
+        users = self.database.get_username_and_password(username, password)
+        print("users:", users)
 
-        if len(users) != 1:
+        if not users:
             self.send_server_login_error(id, "Incorrect username or password")
             return
 
@@ -88,9 +100,9 @@ class Server:
             self.send_server_signup_error(id, "Username must be unique")
             return
 
-        hashed_password = password
+        password = Security.get_hashed_password(password)
 
-        self.database.create_user(username, hashed_password)
+        self.database.create_user(username, password)
         self.send_server_signup_error(id, "")
 
         self.clients[id]["username"] = username
@@ -127,13 +139,13 @@ class Server:
             data = json.loads(data.decode("utf-8"))
 
             if not self.check_data_format(data):
-                return
+                break
 
             self.handle_client_data(id, data)
             Logger.info(f"Server: Received data from client: {data}")
 
         connection.close()
-        Logger.info("Server: Closed client connection.")
+        Logger.info(f"Server: Closed client {id} connection.")
 
     def send_server_login_error(self, id, error):
         data = {"type": "server_login_error", "error": error}
@@ -207,11 +219,6 @@ class Server:
         Logger.info(f"Server: Listening for connections on {HOST}:{PORT}")
         self.socket.bind((HOST, PORT))
         self.socket.listen(2)
-
-        Logger.info("Server: Generating RSA keys")
-        for i in range(2):
-            Security.generate_rsa_keys(is_server=bool(i))
-        Logger.info("Server: Generated RSA keys")
 
         try:
             while True:

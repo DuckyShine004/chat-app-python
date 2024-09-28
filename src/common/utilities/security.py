@@ -1,4 +1,6 @@
 import os
+import base64
+import bcrypt
 
 from Crypto.Cipher import PKCS1_OAEP
 
@@ -61,9 +63,22 @@ class Security:
 
     @staticmethod
     def decrypt(private_pki, message):
+        print(message)
         encrypted_message = bytes.fromhex(message)
         private_key = RSA.import_key(private_pki)
         cipher = PKCS1_OAEP.new(private_key)
         decrypted_message = cipher.decrypt(encrypted_message)
 
         return decrypted_message.decode("utf-8")
+
+    @staticmethod
+    def get_hashed_password(password):
+        password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+        return base64.b64encode(password).decode("utf-8")
+
+    @staticmethod
+    def check_password(password, hashed_password):
+        hashed_password = base64.b64decode(hashed_password.encode("utf-8"))
+
+        return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
