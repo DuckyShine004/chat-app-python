@@ -11,10 +11,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.client.ui.custom.toggle_label import ToggleLabel
-from src.client.ui.signup import Ui_Signup
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
+from src.client.ui.signup import Ui_Signup
 
 from src.client.ui.custom.message_widget import MessageWidget
 
@@ -26,8 +25,7 @@ from src.common.constants.constants import (
 
 
 class UI(QMainWindow):
-    new_message = Signal(str, str)
-    new_server_message = Signal(str)
+    new_message = Signal(str, dict)
     login_error = Signal(str)
     signup_error = Signal(str)
 
@@ -92,7 +90,6 @@ class UI(QMainWindow):
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
         self.new_message.connect(self.add_message)
-        self.new_server_message.connect(self.add_server_message)
         self.login_error.connect(self.handle_server_login)
         self.login.password_input.setTextMargins(0, 0, 35, 0)
         self.signup_error.connect(self.handle_server_signup)
@@ -114,7 +111,13 @@ class UI(QMainWindow):
 
         self.setGeometry(x, y, WINDOW_WIDTH, WINDOW_HEIGHT)
 
-    def add_message(self, sender, message):
+    def add_message(self, role, message):
+        if role == "client":
+            self.add_client_message(message["username"], message["content"])
+        else:
+            self.add_server_message(message["content"])
+
+    def add_client_message(self, sender, message):
         entry_layout = QVBoxLayout()
         entry_layout.setSpacing(0)
 
@@ -153,12 +156,6 @@ class UI(QMainWindow):
         self.chat_layout.setSpacing(20)
         self.chat_layout.setContentsMargins(0, 10, 0, 0)
 
-    def handle_second_client(self):
-        if self.client.id == 0:
-            return
-
-        self.client.send({"type": "receive_messages"})
-
     def handle_login(self):
         username = self.login.username_input.text().strip()
         password = self.login.password_input.text().strip()
@@ -180,7 +177,6 @@ class UI(QMainWindow):
             return
 
         self.show_chat_page()
-        self.handle_second_client()
 
     def handle_server_signup(self, error=""):
         if error:
@@ -190,7 +186,6 @@ class UI(QMainWindow):
             return
 
         self.show_chat_page()
-        self.handle_second_client()
 
     def handle_messaging(self):
         message = self.chat.message_input.text().strip()
@@ -200,7 +195,7 @@ class UI(QMainWindow):
 
         self.client.send({"type": "message", "message": message})
 
-        self.add_message("You", message)
+        self.add_client_message("You", message)
         self.chat.message_input.setText("")
 
     def toggle_login_password_visibility(self, event):

@@ -1,8 +1,9 @@
+from datetime import datetime, timezone
+
 import unqlite
 
-from datetime import datetime
-
 from src.common.utilities.utility import Utility
+from src.common.utilities.security import Security
 
 from src.common.constants.constants import COLLECTIONS, PATHS
 
@@ -12,42 +13,60 @@ class Database:
 
     def __init__(self):
         self.database = unqlite.UnQLite(self.__DATABASE_FILE)
-        self.output_collection("users")
+
         self.initialise()
-        self.output_collection("users")
 
     def initialise(self):
-        self.clear_all_collections()
-        self.database.collection("users").create()
+        self.clear_collections()
+        self.create_collections()
+
+    def create_collections(self):
+        for collection in COLLECTIONS:
+            self.database.collection(collection).create()
 
     def create_user(self, username, password):
-        hashed_password = password
-        timestamp = datetime.now().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
-        self.database.collection("users").store(
-            {
-                "username": username,
-                "password": hashed_password,
-                "online": True,
-                "created_at": timestamp,
-            }
-        )
+        user = {
+            "username": username,
+            "password": password,
+            "online": True,
+            "created_at": timestamp,
+        }
+
+        self.database.collection("users").store(user)
+
+    def create_message(self, role, content, username=""):
+        timestamp = datetime.now(timezone.utc).isoformat()
+
+        message = {
+            "role": role,
+            "username": username,
+            "content": content,
+            "timestamp": timestamp,
+        }
+
+        self.database.collection("messages").store(message)
 
     def get_username(self, username):
         return self.database.collection("users").filter(lambda user: user["username"] == username)
 
     def get_username_and_password(self, username, password):
         return self.database.collection("users").filter(
-            lambda user: user["username"] == username and user["password"] == password
+            lambda user: user["username"] == username and Security.check_password(password, user["password"])
         )
+
+    def get_messages(self):
+        return self.database.collection("messages").all()
+
+    def get_last_message(self):
+        collection = self.database.collection("messages")
+
+        return collection.fetch(collection.last_record_id())
 
     def output_collection(self, collection_name):
         print(self.database.collection(collection_name).all())
 
-    def clear_all_collections(self):
+    def clear_collections(self):
         for collection in COLLECTIONS:
             self.database.collection(collection).drop()
-
-
-if __name__ == "__main__":
-    database = Database()

@@ -1,4 +1,5 @@
 import os
+import ssl
 import json
 import struct
 import socket
@@ -10,9 +11,13 @@ from main import setup
 
 from src.server.database.database import Database
 
-from src.common.utilities.logger import Logger
+from src.server.resource.resource import Resource
 
-from src.common.constants.constants import HEADER_LENGTH, SERVER_TYPES
+from src.common.utilities.logger import Logger
+from src.common.utilities.utility import Utility
+from src.common.utilities.security import Security
+
+from src.common.constants.constants import CIPHER, HEADER_LENGTH, PATHS, SERVER_TYPES
 
 
 load_dotenv()
@@ -21,21 +26,28 @@ HOST = os.getenv("SERVER_HOST")
 PORT = int(os.getenv("SERVER_PORT"))
 
 
+# Suppose we are retrieving using a key store like Amazon KMS
 class Server:
+    __CERTIFICATE = Utility.get_path(PATHS["certificates"], ["server.crt"])
+    __KEY = Utility.get_path(PATHS["keys"], ["server.key"])
+
     def __init__(self):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = self.get_socket()
         self.id = 0
         self.clients = [None, None]
         self.database = Database()
 
-    def add_client(self, id, connection):
-        self.clients[id] = {
-            "connection": connection,
-            "username": "",
-        }
+    def get_socket(self):
+        unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        if id == 0:
-            self.clients[id]["messages"] = []
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain(certfile=self.__CERTIFICATE, keyfile=self.__KEY)
+        context.set_ciphers(CIPHER)
+
+        return context.wrap_socket(unsecure_socket)
+
+    def add_client(self, id, connection):
+        self.clients[id] = Resource(connection)
 
         self.send(connection, {"type": "assign_id", "id": id})
         self.id += 1
@@ -51,18 +63,15 @@ class Server:
                 self.handle_client_signup(id, data["username"], data["password"])
             case "message":
                 self.handle_client_message(id, data["message"])
-            case "receive_messages":
-                self.handle_receive_messages()
 
     def handle_client_login(self, id, username, password):
         if not (username and password):
             self.send_server_login_error(id, "Username and password are required")
             return
 
-        hashed_password = password
-        users = self.database.get_username_and_password(username, hashed_password)
+        users = self.database.get_username_and_password(username, password)
 
-        if len(users) != 1:
+        if not users:
             self.send_server_login_error(id, "Incorrect username or password")
             return
 
@@ -71,8 +80,11 @@ class Server:
             return
 
         self.send_server_login_error(id, "")
+        self.clients[id].username = username
 
-        self.clients[id]["username"] = username
+        if self.clients[1] is not None:
+            self.handle_receive_messages()
+
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_signup(self, id, username, password):
@@ -80,39 +92,37 @@ class Server:
             self.send_server_signup_error(id, "Username and password are required")
             return
 
-        if len(self.database.get_username(username)) == 1:
+        if self.database.get_username(username):
             self.send_server_signup_error(id, "Username must be unique")
             return
 
-        hashed_password = password
+        password = Security.get_hashed_password(password)
 
-        self.database.create_user(username, hashed_password)
+        self.database.create_user(username, password)
         self.send_server_signup_error(id, "")
 
-        self.clients[id]["username"] = username
+        self.clients[id].username = username
+
+        if self.clients[1] is not None:
+            self.database.output_collection("messages")
+            self.handle_receive_messages()
+
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_message(self, id, message):
-        serialised_message = {
-            "username": self.clients[id]["username"],
-            "message": message,
-        }
-
         if self.clients[1] is None:
-            self.clients[0]["messages"].append(serialised_message)
+            self.database.create_message("client", message, self.clients[id].username)
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
         self.send_message_to_client(id, message)
 
     def handle_receive_messages(self):
-        self.send(
-            self.clients[1]["connection"],
-            {"type": "send_messages", "messages": self.clients[0]["messages"]},
-        )
+        data = {"type": "send_messages", "messages": self.database.get_messages()}
+        self.send(self.clients[1].connection, data)
 
     def handle_client(self, id):
-        connection = self.clients[id]["connection"]
+        connection = self.clients[id].connection
 
         while True:
             data = self.receive(connection)
@@ -123,37 +133,48 @@ class Server:
             data = json.loads(data.decode("utf-8"))
 
             if not self.check_data_format(data):
-                return
+                break
 
             self.handle_client_data(id, data)
             Logger.info(f"Server: Received data from client: {data}")
 
         connection.close()
-        Logger.info("Server: Closed client connection.")
+        Logger.info(f"Server: Closed client {id} connection.")
 
     def send_server_login_error(self, id, error):
         data = {"type": "server_login_error", "error": error}
-        self.send(self.clients[id]["connection"], data)
+        self.send(self.clients[id].connection, data)
 
     def send_server_signup_error(self, id, error):
         data = {"type": "server_signup_error", "error": error}
-        self.send(self.clients[id]["connection"], data)
+        self.send(self.clients[id].connection, data)
 
     def send_message_to_client(self, id, message):
         receiver_id = id ^ 1
+
         serialised_message = {
-            "username": self.clients[id]["username"],
-            "message": message,
+            "role": "client",
+            "username": self.clients[id].username,
+            "content": message,
         }
 
         data = {"type": "receive_message", "message": serialised_message}
-        self.send(self.clients[receiver_id]["connection"], data)
+        self.send(self.clients[receiver_id].connection, data)
 
     def send_server_message_to_clients(self, message):
+        role = "server"
+
+        serialised_message = {
+            "role": role,
+            "content": message,
+        }
+
         for client in self.clients:
             if client is not None:
-                data = {"type": "server_message", "message": message}
-                self.send(client["connection"], data)
+                data = {"type": "server_message", "message": serialised_message}
+                self.send(client.connection, data)
+
+        self.database.create_message(role, message)
 
     def check_data_format(self, data):
         if not isinstance(data, dict):
@@ -220,7 +241,7 @@ class Server:
     def disconnect_all_connections(self):
         for id, client in enumerate(self.clients):
             if client is not None:
-                client["connection"].close()
+                client.connection.close()
                 Logger.info(f"Server: Client {id} disconnected")
 
         self.socket.close()

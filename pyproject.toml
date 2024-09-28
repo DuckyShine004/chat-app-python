@@ -14,7 +14,7 @@ disable = [
 
 [tool.pyright]
 pythonVersion = '3.12'
-venvPath = ''
-venv = ''
+venvPath = '.'
+venv = '.venv'
 
 

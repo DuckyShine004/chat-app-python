@@ -3,6 +3,8 @@ PATHS = {
     "logs": [".cache", "logs"],
     "resources": ["src", "common", "resources"],
     "database": ["src", "server", "database"],
+    "keys": [".cache", "keys"],
+    "certificates": [".cache", "certificates"],
 }
 
 CLIENT_TYPES = {
@@ -22,11 +24,15 @@ SERVER_TYPES = {
     "receive_messages",
 }
 
-COLLECTIONS = ["users"]
+COLLECTIONS = ["users", "messages"]
 
 WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
+
+# RSA
+KEY_LENGTH = 1 << 11
+CIPHER = "AES128-SHA"
 
 # COLOURS
 RED = (255, 0, 0)
