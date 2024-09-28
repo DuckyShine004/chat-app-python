@@ -63,8 +63,6 @@ class Server:
                 self.handle_client_signup(id, data["username"], data["password"])
             case "message":
                 self.handle_client_message(id, data["message"])
-            case "receive_messages":
-                self.handle_receive_messages()
 
     def handle_client_login(self, id, username, password):
         if not (username and password):
@@ -82,8 +80,11 @@ class Server:
             return
 
         self.send_server_login_error(id, "")
-
         self.clients[id].username = username
+
+        if self.clients[1] is not None:
+            self.handle_receive_messages()
+
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_signup(self, id, username, password):
@@ -101,11 +102,16 @@ class Server:
         self.send_server_signup_error(id, "")
 
         self.clients[id].username = username
+
+        if self.clients[1] is not None:
+            self.database.output_collection("messages")
+            self.handle_receive_messages()
+
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_message(self, id, message):
         if self.clients[1] is None:
-            self.database.create_message("client", self.clients[id].username, message)
+            self.database.create_message("client", message, self.clients[id].username)
             Logger.warn("Server: Second user has not joined the server yet")
             return
 
@@ -156,17 +162,19 @@ class Server:
         self.send(self.clients[receiver_id].connection, data)
 
     def send_server_message_to_clients(self, message):
-        self.database.create_message("server", "", message)
+        role = "server"
+
+        serialised_message = {
+            "role": role,
+            "content": message,
+        }
 
         for client in self.clients:
             if client is not None:
-                serialised_message = {
-                    "role": "server",
-                    "content": message,
-                }
-
                 data = {"type": "server_message", "message": serialised_message}
                 self.send(client.connection, data)
+
+        self.database.create_message(role, message)
 
     def check_data_format(self, data):
         if not isinstance(data, dict):

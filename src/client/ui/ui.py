@@ -156,12 +156,6 @@ class UI(QMainWindow):
         self.chat_layout.setSpacing(20)
         self.chat_layout.setContentsMargins(0, 10, 0, 0)
 
-    def handle_second_client(self):
-        if self.client.id == 0:
-            return
-
-        self.client.send({"type": "receive_messages"})
-
     def handle_login(self):
         username = self.login.username_input.text().strip()
         password = self.login.password_input.text().strip()
@@ -183,7 +177,6 @@ class UI(QMainWindow):
             return
 
         self.show_chat_page()
-        self.handle_second_client()
 
     def handle_server_signup(self, error=""):
         if error:
@@ -193,7 +186,6 @@ class UI(QMainWindow):
             return
 
         self.show_chat_page()
-        self.handle_second_client()
 
     def handle_messaging(self):
         message = self.chat.message_input.text().strip()

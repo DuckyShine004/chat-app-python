@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 import unqlite
 
@@ -25,7 +25,7 @@ class Database:
             self.database.collection(collection).create()
 
     def create_user(self, username, password):
-        timestamp = datetime.now().isoformat()
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         user = {
             "username": username,
@@ -36,8 +36,8 @@ class Database:
 
         self.database.collection("users").store(user)
 
-    def create_message(self, role, username, content):
-        timestamp = datetime.now().isoformat()
+    def create_message(self, role, content, username=""):
+        timestamp = datetime.now(timezone.utc).isoformat()
 
         message = {
             "role": role,
@@ -57,9 +57,12 @@ class Database:
         )
 
     def get_messages(self):
-        messages = self.database.collection("messages").all()
+        return self.database.collection("messages").all()
 
-        return sorted(messages, key=lambda message: message["timestamp"])
+    def get_last_message(self):
+        collection = self.database.collection("messages")
+
+        return collection.fetch(collection.last_record_id())
 
     def output_collection(self, collection_name):
         print(self.database.collection(collection_name).all())
