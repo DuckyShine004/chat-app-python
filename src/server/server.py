@@ -22,7 +22,7 @@ from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
 from src.common.utilities.security import Security
 
-from src.common.constants.constants import CIPHER, HEADER_LENGTH, PATHS, SERVER_TYPES
+from src.common.constants.constants import CIPHER, HEADER_LENGTH, MAX_CLIENTS, PATHS, SERVER_TYPES
 
 load_dotenv()
 
@@ -121,6 +121,7 @@ class Server:
 
         if self.clients[1] is not None:
             self.send_messages_to_second_client()
+            self.exchange_usernames()
 
         self.send_server_message_to_clients(f"{username} joined the chat")
 
@@ -144,6 +145,7 @@ class Server:
 
         if self.clients[1] is not None:
             self.send_messages_to_second_client()
+            self.exchange_usernames()
 
         self.send_server_message_to_clients(f"{username} joined the chat")
 
@@ -205,6 +207,14 @@ class Server:
 
         data = {"type": "server_login_error", "error": error}
         self.send(self.clients[id].connection, data)
+
+    def exchange_usernames(self) -> None:
+        """Exchange usernames between the first client and the second
+        client."""
+
+        for id in range(MAX_CLIENTS):
+            data = {"type": "server_exchange_usernames", "username": self.clients[id ^ 1].username}
+            self.send(self.clients[id].connection, data)
 
     def send_server_signup_error(self, id: int, error: str) -> None:
         """Sends a signup error message to the client with the corresponding

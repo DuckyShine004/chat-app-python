@@ -1,5 +1,7 @@
 """This module contains the code for defining a client interface."""
 
+from __future__ import annotations
+
 import os
 import time
 import json
@@ -9,16 +11,17 @@ import threading
 
 from ssl import SSLSocket, SSLContext, PROTOCOL_TLS_CLIENT
 
-from typing import Any, List, Union
+from typing import Any, List, Union, TYPE_CHECKING
 
 from dotenv import load_dotenv
-
-from src.client.ui.ui import UI
 
 from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
 
 from src.common.constants.constants import CLIENT_TYPES, HEADER_LENGTH, PATHS
+
+if TYPE_CHECKING:
+    from src.client.ui.ui import UI
 
 load_dotenv()
 
@@ -118,8 +121,19 @@ class Client:
                 self.handle_server_login_error(data["error"])
             case "server_signup_error":
                 self.handle_server_signup_error(data["error"])
+            case "server_exchange_usernames":
+                self.handle_second_username(data["username"])
 
-    def handle_server_message(self, message):
+    def handle_second_username(self, second_username: str) -> None:
+        """Updates the chat title to who the current user is chatting with.
+
+        Args:
+            second_username: the second user's username
+        """
+
+        self.ui.chat_label_signal.emit(second_username)
+
+    def handle_server_message(self, message: str) -> None:
         """Handles messages sent by the server by updating the chat
         accordingly. Messages sent by the server could be from other clients as
         well.
@@ -137,7 +151,7 @@ class Client:
             error: the error sent by the server
         """
 
-        self.ui.login_error.emit(error)
+        self.ui.login_error_signal.emit(error)
 
     def handle_server_signup_error(self, error: str) -> None:
         """Handles the signup error sent by the server.
@@ -146,7 +160,7 @@ class Client:
             error: the error sent by the server
         """
 
-        self.ui.signup_error.emit(error)
+        self.ui.signup_error_signal.emit(error)
 
     def handle_server_messages(self, messages: List[Any]) -> None:
         """Updates the current client's chat based on messages sent by other
@@ -167,7 +181,7 @@ class Client:
             message: the message to be sent to the chat
         """
 
-        self.ui.new_message.emit(message["role"], message)
+        self.ui.new_message_signal.emit(message["role"], message)
 
     def receive(self) -> Union[bytearray, None]:
         """Receive data based on the length of the incoming data. Returns a

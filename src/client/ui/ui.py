@@ -1,6 +1,8 @@
 """This module provides an interface for interacting with the UI."""
 
-from typing import Any
+from __future__ import annotations
+
+from typing import Any, TYPE_CHECKING
 
 from PySide6.QtCore import Qt, Signal
 
@@ -16,7 +18,6 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.client.client import Client
 
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
@@ -30,15 +31,19 @@ from src.common.constants.constants import (
     WINDOW_WIDTH,
 )
 
+if TYPE_CHECKING:
+    from src.client.client import Client
+
 
 class UI(QMainWindow):
     """The UI class manages anything UI related, such as invoking methods when
     the user presses a GUI element.
 
     Attributes:
-        new_message: the new message signal
-        login_error: the login error signal
-        signup_error: the signup error signal
+        new_message_signal: the new message signal
+        login_error_signal: the login error signal
+        signup_error_signal: the signup error signal
+        chat_label_signal: the chat label signal
         client: the client
         stacked_widget: the stacked widget
         login: the login instance
@@ -51,9 +56,10 @@ class UI(QMainWindow):
         is_password_visible: is the password visible
     """
 
-    new_message = Signal(str, dict)
-    login_error = Signal(str)
-    signup_error = Signal(str)
+    new_message_signal: Signal = Signal(str, dict)
+    chat_label_signal: Signal = Signal(str)
+    login_error_signal: Signal = Signal(str)
+    signup_error_signal: Signal = Signal(str)
 
     def __init__(self, client: Client) -> None:
         """Initialises the UI instance fields.
@@ -96,8 +102,6 @@ class UI(QMainWindow):
         self.initialise_signup_page()
         self.initialise_chat_page()
 
-        self.new_message.connect(self.add_message)
-
         self.show_login_page()
 
     def initialise_signup_page(self) -> None:
@@ -119,7 +123,7 @@ class UI(QMainWindow):
 
         self.signup.error_label.hide()
 
-        self.signup_error.connect(self.handle_server_signup)
+        self.signup_error_signal.connect(self.handle_server_signup)
 
     def initialise_login_page(self) -> None:
         """Initialises the login page."""
@@ -142,7 +146,8 @@ class UI(QMainWindow):
 
         self.login.error_label.hide()
 
-        self.login_error.connect(self.handle_server_login)
+        self.chat_label_signal.connect(self.handle_second_username)
+        self.login_error_signal.connect(self.handle_server_login)
 
     def initialise_chat_page(self) -> None:
         """Initialises the chat page."""
@@ -160,6 +165,8 @@ class UI(QMainWindow):
 
         self.chat.scrollArea.setWidgetResizable(True)
         self.chat.scrollArea.verticalScrollBar().rangeChanged.connect(self.scroll_to_bottom)
+
+        self.new_message_signal.connect(self.add_message)
 
     def centre_window(self) -> None:
         """Centres the application window."""
@@ -272,6 +279,16 @@ class UI(QMainWindow):
         self.chat_layout.addLayout(entry_layout)
         self.chat_layout.setSpacing(20)
         self.chat_layout.setContentsMargins(0, 10, 0, 0)
+
+    def handle_second_username(self, second_username: str) -> None:
+        """Handles the second user's username. It updates the chat title to
+        reflect who the current user is chatting with.
+
+        Args:
+            second_username: the second user's username
+        """
+
+        self.chat.chat_label.setText(f"YOU ARE CHATTING WITH {second_username}")
 
     def handle_login(self) -> None:
         """Handles the client logging in."""

@@ -129,7 +129,7 @@ class Ui_Chat(object):
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.chat_label = QLabel(Chat)
         self.chat_label.setObjectName("chat_label")
-        self.chat_label.setGeometry(QRect(460, 20, 821, 40))
+        self.chat_label.setGeometry(QRect(460, 20, 801, 40))
         self.chat_label.setStyleSheet(
             "QLabel {\n"
             "    color: white;  /* Text color */\n"
@@ -248,7 +248,7 @@ class Ui_Chat(object):
 
     def retranslateUi(self, Chat):
         Chat.setWindowTitle(QCoreApplication.translate("Chat", "Form", None))
-        self.chat_label.setText(QCoreApplication.translate("Chat", "PERSON", None))
+        self.chat_label.setText(QCoreApplication.translate("Chat", "WAITING FOR THE SECOND USER...", None))
         self.label_2.setText("")
         self.message_input.setPlaceholderText(QCoreApplication.translate("Chat", "Type a message", None))
         self.send_button.setText("")

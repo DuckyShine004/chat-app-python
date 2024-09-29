@@ -15,6 +15,7 @@ CLIENT_TYPES = {
     "server_messages",
     "server_login_error",
     "server_signup_error",
+    "server_exchange_usernames",
 }
 
 SERVER_TYPES = {
@@ -40,3 +41,4 @@ RED = (255, 0, 0)
 
 # Client-server Constants
 HEADER_LENGTH = 1 << 2
+MAX_CLIENTS = 2
