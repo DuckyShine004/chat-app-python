@@ -16,7 +16,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from client.client import Client
+from src.client.client import Client
+
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 from src.client.ui.signup import Ui_Signup
