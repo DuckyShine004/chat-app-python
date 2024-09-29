@@ -23,6 +23,3 @@ else
     pyside6-uic "$INPUT_DIR/$input_file" -o "$OUTPUT_DIR/$output_file"
     echo "[INFO] Compiled $input_file to $OUTPUT_DIR/$output_file"
 fi
-
-# pyuic6 -x "$INPUT_DIR/$input_file" -o "$OUTPUT_DIR/$output_file"
-# python3 -m PyQt6.uic.pyuic -x "$INPUT_DIR/$input_file" -o "$OUTPUT_DIR/$output_file"
