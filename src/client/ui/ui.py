@@ -1,4 +1,5 @@
-from PySide6.QtCore import QTimer, Qt, Signal
+from PySide6.QtCore import Qt, Signal
+
 from PySide6.QtWidgets import (
     QApplication,
     QHBoxLayout,
@@ -14,7 +15,6 @@ from PySide6.QtWidgets import (
 from src.client.ui.chat import Ui_Chat
 from src.client.ui.login import Ui_Login
 from src.client.ui.signup import Ui_Signup
-
 from src.client.ui.custom.message_widget import MessageWidget
 
 from src.common.constants.constants import (
@@ -160,7 +160,7 @@ class UI(QMainWindow):
         username = self.login.username_input.text().strip()
         password = self.login.password_input.text().strip()
 
-        self.client.send({"type": "login", "username": username, "password": password})
+        self.client.send({"type": "client_login", "username": username, "password": password})
 
     def handle_signup(self):
         username = self.signup.username_input.text().strip()
@@ -182,7 +182,6 @@ class UI(QMainWindow):
         if error:
             self.signup.error_label.setText(f"    {error}")
             self.signup.error_label.show()
-
             return
 
         self.show_chat_page()
@@ -193,7 +192,7 @@ class UI(QMainWindow):
         if not message:
             return
 
-        self.client.send({"type": "message", "message": message})
+        self.client.send({"type": "client_message", "message": message})
 
         self.add_client_message("You", message)
         self.chat.message_input.setText("")
@@ -228,7 +227,6 @@ class UI(QMainWindow):
 
     def show_chat_page(self):
         self.chat.send_icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        print("bruh")
         self.stacked_widget.setCurrentWidget(self.chat_widget)
 
     def show_signup_page(self):

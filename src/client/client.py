@@ -1,12 +1,19 @@
+"""This module contains the code for defining a client interface."""
+
 import os
-import ssl
 import time
 import json
 import socket
 import struct
 import threading
 
+from ssl import SSLSocket, SSLContext, PROTOCOL_TLS_CLIENT
+
+from typing import Any, List, Union
+
 from dotenv import load_dotenv
+
+from src.client.ui.ui import UI
 
 from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
@@ -15,29 +22,52 @@ from src.common.constants.constants import CLIENT_TYPES, HEADER_LENGTH, PATHS
 
 load_dotenv()
 
-HOST = os.getenv("CLIENT_HOST")
-PORT = int(os.getenv("CLIENT_PORT"))
-
 
 class Client:
-    __CERTIFICATE = Utility.get_path(PATHS["certificates"], ["server.crt"])
+    """The Client class containing client-side APIs.
 
-    def __init__(self):
-        self.socket = self.get_socket()
-        self.id = -1
-        self.ui = None
+    Attributes:
+        __HOST: the client host
+        __PORT: the client port
+        __CERTIFICATE: the server certificate
+        socket: the client socket secured under TLS
+        id: the client id
+        ui: the client ui
+    """
 
-    def get_socket(self):
+    __HOST: str = os.getenv("CLIENT_HOST")
+    __PORT: int = int(os.getenv("CLIENT_PORT"))
+    __CERTIFICATE: str = Utility.get_path(PATHS["certificates"], ["server.crt"])
+
+    def __init__(self) -> None:
+        """Initialises the Client instance."""
+
+        self.socket: SSLSocket = self.get_secure_socket()
+        self.id: int = -1
+        self.ui: UI = None
+
+    def get_secure_socket(self) -> SSLSocket:
+        """Returns a secure socket wrapped with a TLS protection layer.
+
+        Returns: a secure socket wrapped with a protection layer; TLS
+        """
+
         unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context = SSLContext(PROTOCOL_TLS_CLIENT)
         context.load_verify_locations(self.__CERTIFICATE)
 
-        return context.wrap_socket(unsecure_socket, server_hostname=HOST)
+        return context.wrap_socket(unsecure_socket, server_hostname=self.__HOST)
 
     @Utility.timed_event()
     def connect(self):
-        self.socket.connect((HOST, PORT))
+        """Connects the client to the server.
+
+        This is a blocking call, as the client should retrieve an id
+        before proceeding.
+        """
+
+        self.socket.connect((self.__HOST, self.__PORT))
 
         thread = threading.Thread(target=self.receive, daemon=True)
         thread.start()
@@ -45,7 +75,16 @@ class Client:
         while self.id == -1:
             time.sleep(0.1)
 
-    def check_data_format(self, data):
+    def check_data_format(self, data: Any) -> bool:
+        """Check if the data sent from the server is valid or not. It should
+        include a 'type', so that the corresponding RPC can be executed.
+
+        Args:
+            data: the data sent from the server
+
+        Returns: the validity of the data
+        """
+
         if not isinstance(data, dict):
             Logger.error("Client: Data is not in the correct format")
             return False
@@ -60,49 +99,94 @@ class Client:
 
         return True
 
-    def handle_server_data(self, data):
+    def handle_server_data(self, data: Any) -> None:
+        """Handles the data sent by the server with the corresponding id. It
+        executes the corresponding RPC.
+
+        Args:
+            data: the data sent by the server
+        """
+
         match data["type"]:
-            case "assign_id":
-                self.set_id(data["id"])
+            case "server_assign_id":
+                self.id = data["id"]
             case "message":
                 self.handle_sending_message(data["message"])
-            case "receive_message":
-                self.handle_receiving_message(data["message"])
             case "server_message":
                 self.handle_server_message(data["message"])
-            case "send_messages":
-                self.handle_sent_messages(data["messages"])
+            case "server_messages":
+                self.handle_server_messages(data["messages"])
             case "server_login_error":
                 self.handle_server_login_error(data["error"])
             case "server_signup_error":
                 self.handle_server_signup_error(data["error"])
 
-    def set_id(self, id):
-        self.id = id
+    def handle_sending_message(self, message: str) -> None:
+        """Handles the client sending messages to another client.
 
-    def handle_sending_message(self, message):
-        self.send({"type": "message", "message": message})
+        Args:
+            message: the message to be sent
+        """
 
-    def handle_receiving_message(self, message):
-        self.update_chat(message)
+        self.send({"type": "client_message", "message": message})
 
     def handle_server_message(self, message):
+        """Handles messages sent by the server by updating the chat
+        accordingly. Messages sent by the server could be from other clients as
+        well.
+
+        Args:
+            message: the message sent by the server
+        """
+
         self.update_chat(message)
 
-    def handle_server_login_error(self, error):
+    def handle_server_login_error(self, error: str) -> None:
+        """Handles the login error sent by the server.
+
+        Args:
+            error: the error sent by the server
+        """
+
         self.ui.login_error.emit(error)
 
-    def handle_server_signup_error(self, error):
+    def handle_server_signup_error(self, error: str) -> None:
+        """Handles the signup error sent by the server.
+
+        Args:
+            error: the error sent by the server
+        """
+
         self.ui.signup_error.emit(error)
 
-    def handle_sent_messages(self, messages):
+    def handle_server_messages(self, messages: List[Any]) -> None:
+        """Updates the current client's chat based on messages sent by other
+        clients and the messages stored on the server.
+
+        Args:
+            messages: the list of messages
+        """
+
         for message in messages:
             self.update_chat(message)
 
-    def update_chat(self, message):
+    def update_chat(self, message: Any) -> None:
+        """Updates the chat because the UI is running on a separate thread, and
+        must therefore be called within the client code.
+
+        Args:
+            message: the message to be sent to the chat
+        """
+
         self.ui.new_message.emit(message["role"], message)
 
-    def receive(self):
+    def receive(self) -> Union[bytearray, None]:
+        """Receive data based on the length of the incoming data. Returns a
+        50-byte payload. Either all or no data is returned.
+
+        Returns: data in the form of a bytearray or nothing
+        """
+
         while True:
             raw_length = self.receive_all(HEADER_LENGTH)
 
@@ -123,7 +207,16 @@ class Client:
             self.handle_server_data(data)
             Logger.info(f"Client: Received message: {data}")
 
-    def receive_all(self, length):
+    def receive_all(self, length: int) -> Union[bytearray, None]:
+        """Receive all data sent from the server. If the server connection is
+        closed then nothing will be returned.
+
+        Args:
+            length: the size of the data to be retrieved
+
+        Returns: data in the form of a bytearray or nothing
+        """
+
         data = bytearray()
 
         while len(data) < length:
@@ -136,7 +229,14 @@ class Client:
 
         return data
 
-    def send(self, data):
+    def send(self, data: Any) -> None:
+        """Sends data to the server. The payload contains the header along with
+        the data.
+
+        Args:
+            data: the data to be sent to the server
+        """
+
         message = json.dumps(data).encode("utf-8")
         message = struct.pack(">I", len(message)) + message
 

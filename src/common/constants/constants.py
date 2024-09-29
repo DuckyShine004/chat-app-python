@@ -8,20 +8,18 @@ PATHS = {
 }
 
 CLIENT_TYPES = {
-    "assign_id",
+    "server_assign_id",
     "message",
-    "receive_message",
-    "send_messages",
     "server_message",
+    "server_messages",
     "server_login_error",
     "server_signup_error",
 }
 
 SERVER_TYPES = {
-    "login",
+    "client_login",
     "client_signup",
-    "message",
-    "receive_messages",
+    "client_message",
 }
 
 COLLECTIONS = ["users", "messages"]
