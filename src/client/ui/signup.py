@@ -95,6 +95,7 @@ class Ui_Signup(object):
         self.sign_up_button.setObjectName("sign_up_button")
         self.sign_up_button.setGeometry(QRect(480, 640, 320, 50))
         self.sign_up_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.sign_up_button.setFocusPolicy(Qt.ClickFocus)
         self.sign_up_button.setStyleSheet(
             "QPushButton {\n"
             "    background-color: qlineargradient(\n"
@@ -167,6 +168,8 @@ class Ui_Signup(object):
         self.eye_icon.setStyleSheet(
             "QLabel {\n" "	image: url(:/icons/ui/icons/eye_closed.png);\n" "	background-color: transparent;\n" "}"
         )
+        QWidget.setTabOrder(self.username_input, self.password_input)
+        QWidget.setTabOrder(self.password_input, self.sign_up_button)
 
         self.retranslateUi(Signup)
 

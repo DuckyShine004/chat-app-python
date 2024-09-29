@@ -63,6 +63,7 @@ class Ui_Chat(object):
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
         self.scrollArea.setSizePolicy(sizePolicy1)
+        self.scrollArea.setFocusPolicy(Qt.NoFocus)
         self.scrollArea.setStyleSheet(
             "/* ScrollArea */\n"
             "QScrollArea {\n"
@@ -126,10 +127,10 @@ class Ui_Chat(object):
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 892, 577))
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
-        self.label = QLabel(Chat)
-        self.label.setObjectName("label")
-        self.label.setGeometry(QRect(460, 20, 821, 40))
-        self.label.setStyleSheet(
+        self.chat_label = QLabel(Chat)
+        self.chat_label.setObjectName("chat_label")
+        self.chat_label.setGeometry(QRect(460, 20, 821, 40))
+        self.chat_label.setStyleSheet(
             "QLabel {\n"
             "    color: white;  /* Text color */\n"
             "    font-size: 32px;  /* Font size */\n"
@@ -213,6 +214,31 @@ class Ui_Chat(object):
             "QLabel {\n" "	image: url(:/icons/ui/icons/send.png);\n" "	background-color: transparent;\n" "}"
         )
         self.send_icon.setScaledContents(True)
+        self.line_3 = QFrame(Chat)
+        self.line_3.setObjectName("line_3")
+        self.line_3.setGeometry(QRect(0, 61, 385, 20))
+        self.line_3.setStyleSheet(
+            "#line_3 {\n"
+            "    background-color: transparent; /* Transparent background */\n"
+            "    border-bottom: 2px solid #161B27; /* Vertical line with thickness 3px and color white */\n"
+            "}"
+        )
+        self.line_3.setFrameShape(QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+        self.label_3 = QLabel(Chat)
+        self.label_3.setObjectName("label_3")
+        self.label_3.setGeometry(QRect(20, 20, 271, 40))
+        self.label_3.setStyleSheet(
+            "QLabel {\n"
+            "    color: white;  /* Text color */\n"
+            "    font-size: 32px;  /* Font size */\n"
+            "	font-weight: bold;  /* Make the font bold */\n"
+            "	background-color: transparent;  /* Transparent background */\n"
+            "}\n"
+            ""
+        )
+        QWidget.setTabOrder(self.scrollArea, self.message_input)
+        QWidget.setTabOrder(self.message_input, self.send_button)
 
         self.retranslateUi(Chat)
 
@@ -222,10 +248,11 @@ class Ui_Chat(object):
 
     def retranslateUi(self, Chat):
         Chat.setWindowTitle(QCoreApplication.translate("Chat", "Form", None))
-        self.label.setText(QCoreApplication.translate("Chat", "PERSON", None))
+        self.chat_label.setText(QCoreApplication.translate("Chat", "PERSON", None))
         self.label_2.setText("")
         self.message_input.setPlaceholderText(QCoreApplication.translate("Chat", "Type a message", None))
         self.send_button.setText("")
         self.send_icon.setText("")
+        self.label_3.setText(QCoreApplication.translate("Chat", "MESSAGES", None))
 
     # retranslateUi

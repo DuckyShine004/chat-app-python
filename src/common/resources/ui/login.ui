@@ -105,6 +105,9 @@ QLineEdit:focus {
     <property name="cursor">
      <cursorShape>PointingHandCursor</cursorShape>
     </property>
+    <property name="focusPolicy">
+     <enum>Qt::ClickFocus</enum>
+    </property>
     <property name="styleSheet">
      <string notr="true">QPushButton {
     background-color: qlineargradient(
@@ -238,6 +241,9 @@ padding: 5px;
    <property name="cursor">
     <cursorShape>PointingHandCursor</cursorShape>
    </property>
+   <property name="focusPolicy">
+    <enum>Qt::ClickFocus</enum>
+   </property>
    <property name="styleSheet">
     <string notr="true">QPushButton {
     background-color: transparent; 
@@ -273,6 +279,12 @@ color: white;</string>
    </property>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>username_input</tabstop>
+  <tabstop>password_input</tabstop>
+  <tabstop>login_button</tabstop>
+  <tabstop>sign_up_button</tabstop>
+ </tabstops>
  <resources>
   <include location="../ui.qrc"/>
  </resources>

@@ -95,6 +95,7 @@ class Ui_Login(object):
         self.login_button.setObjectName("login_button")
         self.login_button.setGeometry(QRect(480, 640, 320, 50))
         self.login_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.login_button.setFocusPolicy(Qt.ClickFocus)
         self.login_button.setStyleSheet(
             "QPushButton {\n"
             "    background-color: qlineargradient(\n"
@@ -171,6 +172,7 @@ class Ui_Login(object):
         self.sign_up_button.setObjectName("sign_up_button")
         self.sign_up_button.setGeometry(QRect(675, 440, 87, 27))
         self.sign_up_button.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.sign_up_button.setFocusPolicy(Qt.ClickFocus)
         self.sign_up_button.setStyleSheet(
             "QPushButton {\n"
             "    background-color: transparent; \n"
@@ -188,6 +190,9 @@ class Ui_Login(object):
         self.label_2.setObjectName("label_2")
         self.label_2.setGeometry(QRect(520, 440, 161, 27))
         self.label_2.setStyleSheet("background-color: transparent;\n" "color: white;")
+        QWidget.setTabOrder(self.username_input, self.password_input)
+        QWidget.setTabOrder(self.password_input, self.login_button)
+        QWidget.setTabOrder(self.login_button, self.sign_up_button)
 
         self.retranslateUi(Login)
 

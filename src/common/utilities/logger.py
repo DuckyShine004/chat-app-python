@@ -1,17 +1,46 @@
+"""This module provides custom defined logging APIs."""
+
 import logging
+
+from typing import Any
 
 
 class Logger:
-    LOGGER = logging.getLogger()
+    """The Logger class provides global static methods that can be used by
+    other classes to log events.
+
+    Attributes:
+        __LOGGER: the logger
+    """
+
+    __LOGGER: Any = logging.getLogger()
 
     @staticmethod
-    def info(message):
-        Logger.LOGGER.info(message)
+    def info(message: str) -> None:
+        """Logs information.
+
+        Args:
+            message: the message to be logged
+        """
+
+        Logger.__LOGGER.info(message)
 
     @staticmethod
-    def warn(message):
-        Logger.LOGGER.warning(message)
+    def warn(message: str) -> None:
+        """Logs warning.
+
+        Args:
+            message: the message to be logged
+        """
+
+        Logger.__LOGGER.warning(message)
 
     @staticmethod
-    def error(message):
-        Logger.LOGGER.error(message)
+    def error(message: str) -> None:
+        """Logs error.
+
+        Args:
+            message: the message to be logged
+        """
+
+        Logger.__LOGGER.error(message)

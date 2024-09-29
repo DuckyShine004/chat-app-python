@@ -110,8 +110,6 @@ class Client:
         match data["type"]:
             case "server_assign_id":
                 self.id = data["id"]
-            case "message":
-                self.handle_sending_message(data["message"])
             case "server_message":
                 self.handle_server_message(data["message"])
             case "server_messages":
@@ -120,15 +118,6 @@ class Client:
                 self.handle_server_login_error(data["error"])
             case "server_signup_error":
                 self.handle_server_signup_error(data["error"])
-
-    def handle_sending_message(self, message: str) -> None:
-        """Handles the client sending messages to another client.
-
-        Args:
-            message: the message to be sent
-        """
-
-        self.send({"type": "client_message", "message": message})
 
     def handle_server_message(self, message):
         """Handles messages sent by the server by updating the chat

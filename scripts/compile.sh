@@ -1,8 +1,8 @@
 #!/bin/bash
 
-RESOURCE_DIR="src/common/resources"
-INPUT_DIR="src/common/resources/ui"
-OUTPUT_DIR="src/client/ui"
+RESOURCE_DIR="../src/common/resources"
+INPUT_DIR="../src/common/resources/ui"
+OUTPUT_DIR="../src/client/ui"
 
 if [ $# -lt 1 ]; then
     echo "Need at least one input"
