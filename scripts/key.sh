@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Preprocessing
 readonly KEY_PATH=.cache/keys
 readonly CONFIG_PATH=.cache/configurations
 readonly CERTIFICATE_PATH=.cache/certificates

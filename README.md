@@ -49,6 +49,6 @@ Distributed under the `MIT License`. See `LICENSE.txt` for more information.
 
 Gallon Zhou: [Linkedin](https://www.linkedin.com/in/gallon-zhou-a3739b278/)
 
-Project Link: [https://github.com/DuckyShine004/tetris](https://github.com/DuckyShine004/chat-app-python)
+Project Link: [https://github.com/DuckyShine004/chat-app-python](https://github.com/DuckyShine004/chat-app-python)
 
 
