@@ -8,7 +8,21 @@ This Python-based chat application uses TCP sockets secured by the TLS protocol 
 > This project requires Python version `3.12.4`. Using a different version may cause dependencies to become corrupted or fail to install properly.
 
 ## Snapshots
+<h3 align="center">Signup/Login</h3>
+<p align="center">
+  <img src="https://github.com/DuckyShine004/chat-app-python/blob/main/snapshots/signup.png?raw=true" alt="signup" width="400"/>
+  <img src="https://raw.githubusercontent.com/DuckyShine004/chat-app-python/refs/heads/main/snapshots/login.png?token=GHSAT0AAAAAACVXYQII2JUSVABWX6HZBGOYZX2RNSA" alt="login" width="400"/>
+</p>
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/DuckyShine004/chat-app-python/main/snapshots/signup.png" alt="snap.png"/>
+</p>
+
+<h3 align="center">Chatting</h3>
+<p align="center">
+  <img src="snapshots/baz.png" alt="baz" width="400"/>
+  <img src="snapshots/qux.png" alt="qux" width="400"/>
+</p>
 
 ## Getting Started
 
