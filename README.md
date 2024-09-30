@@ -11,17 +11,13 @@ This Python-based chat application uses TCP sockets secured by the TLS protocol 
 <h3 align="center">Signup/Login</h3>
 <p align="center">
   <img src="https://github.com/DuckyShine004/chat-app-python/blob/main/snapshots/signup.png?raw=true" alt="signup" width="400"/>
-  <img src="https://raw.githubusercontent.com/DuckyShine004/chat-app-python/refs/heads/main/snapshots/login.png?token=GHSAT0AAAAAACVXYQII2JUSVABWX6HZBGOYZX2RNSA" alt="login" width="400"/>
-</p>
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/DuckyShine004/chat-app-python/main/snapshots/signup.png" alt="snap.png"/>
+  <img src="https://github.com/DuckyShine004/chat-app-python/blob/main/snapshots/login.png?raw=true" alt="login" width="400"/>
 </p>
 
 <h3 align="center">Chatting</h3>
 <p align="center">
-  <img src="snapshots/baz.png" alt="baz" width="400"/>
-  <img src="snapshots/qux.png" alt="qux" width="400"/>
+  <img src="https://github.com/DuckyShine004/chat-app-python/blob/main/snapshots/bob.png?raw=true" alt="bob" width="400"/>
+  <img src="https://github.com/DuckyShine004/chat-app-python/blob/main/snapshots/alice.png?raw=true" alt="alice" width="400"/>
 </p>
 
 ## Getting Started
