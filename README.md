@@ -7,6 +7,9 @@ This Python-based chat application uses TCP sockets secured by the TLS protocol 
 > 
 > This project requires Python version `3.12.4`. Using a different version may cause dependencies to become corrupted or fail to install properly.
 
+## Snapshots
+
+
 ## Getting Started
 
 To guarantee a seamless experience moving forward, please read and follow the installation instructions carefully.
@@ -29,7 +32,7 @@ To run the project, simply follow the instructions as listed below:
    ```
 4. Install the required packages
    ```sh
-   pip install -r requirements.txt
+   pip install -r requirements_unspecified.txt
    ```
 5. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows.)   
    ```sh
