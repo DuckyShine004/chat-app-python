@@ -110,19 +110,18 @@ class Client:
             data: the data sent by the server
         """
 
-        match data["type"]:
-            case "server_assign_id":
-                self.id = data["id"]
-            case "server_message":
-                self.handle_server_message(data["message"])
-            case "server_messages":
-                self.handle_server_messages(data["messages"])
-            case "server_login_error":
-                self.handle_server_login_error(data["error"])
-            case "server_signup_error":
-                self.handle_server_signup_error(data["error"])
-            case "server_exchange_usernames":
-                self.handle_second_username(data["username"])
+        if data["type"] == "server_assign_id":
+            self.id = data["id"]
+        if data["type"] == "server_message":
+            self.handle_server_message(data["message"])
+        if data["type"] == "server_messages":
+            self.handle_server_messages(data["messages"])
+        if data["type"] == "server_login_error":
+            self.handle_server_login_error(data["error"])
+        if data["type"] == "server_signup_error":
+            self.handle_server_signup_error(data["error"])
+        if data["type"] == "server_exchange_usernames":
+            self.handle_second_username(data["username"])
 
     def handle_second_username(self, second_username: str) -> None:
         """Updates the chat title to who the current user is chatting with.

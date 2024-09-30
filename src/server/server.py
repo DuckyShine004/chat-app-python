@@ -96,13 +96,12 @@ class Server:
             data: the data sent by the client
         """
 
-        match data["type"]:
-            case "client_login":
-                self.handle_client_login(id, data["username"], data["password"])
-            case "client_signup":
-                self.handle_client_signup(id, data["username"], data["password"])
-            case "client_message":
-                self.handle_client_message(id, data["message"])
+        if data["type"] == "client_login":
+            self.handle_client_login(id, data["username"], data["password"])
+        if data["type"] == "client_signup":
+            self.handle_client_signup(id, data["username"], data["password"])
+        if data["type"] == "client_message":
+            self.handle_client_message(id, data["message"])
 
     def handle_client_login(self, id: int, username: str, password: str) -> None:
         """Handles the client login request.

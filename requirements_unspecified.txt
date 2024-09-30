@@ -1,0 +1,10 @@
+bcrypt
+Cython
+pycryptodome
+PySide6
+PySide6-Addons
+PySide6-Essentials
+python-dotenv
+shiboken6
+unqlite
+python-dotenv

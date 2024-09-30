@@ -19,20 +19,29 @@ To run the project, simply follow the instructions as listed below:
    ```sh
    git clone https://github.com/DuckyShine004/chat-app-python
    ```
-2. Install the required packages
+2. Create a virtual environment (ensure you're using Python 3.7 or later, as specified in the assignment brief)
+   ```sh
+   python -m venv .venv
+   ```
+3. Before installing dependencies, upgrade pip, setuptools, and wheel by running
+   ```sh
+   pip install --upgrade pip setuptools wheel
+   ```
+4. Install the required packages
    ```sh
    pip install -r requirements.txt
    ```
-3. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows.)   
+5. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows.)   
    ```sh
    python src/server/server.py
    ```
-4. In a new terminal, run the client by executing
-    ```sh
-    python main.py
-    ```
+6. In a new terminal, run the client by executing
+   ```sh
+   python main.py
+   ```
+7. Repeat step 6 to connect the second client to the server
 
-## Contribution
+## Contributions
 
 Any contributions you make are **greatly appreciated**.
 
