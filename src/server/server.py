@@ -12,8 +12,6 @@ from typing import Any, List, Union
 
 from dotenv import load_dotenv
 
-from main import setup
-
 from src.server.database.database import Database
 
 from src.server.context.context import Context
@@ -501,6 +499,6 @@ class Server:
 
 
 if __name__ == "__main__":
-    setup()
+    Logger.setup()
 
     Server().start()
