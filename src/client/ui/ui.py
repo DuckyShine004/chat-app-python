@@ -314,7 +314,7 @@ class UI(QMainWindow):
         """
 
         if error:
-            self.login.error_label.setText(f"    {error}")
+            self.login.error_label.setText(f"\u26A0  {error}")
             self.login.error_label.show()
 
             return
@@ -329,7 +329,7 @@ class UI(QMainWindow):
         """
 
         if error:
-            self.signup.error_label.setText(f"    {error}")
+            self.signup.error_label.setText(f"\u26A0  {error}")
             self.signup.error_label.show()
             return
 

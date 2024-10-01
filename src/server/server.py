@@ -41,6 +41,7 @@ class Server:
         id: the auto-incrementing client id
         clients: a list containing client resources
         database: the database
+        client_slots: the available client slots
     """
 
     __KEY = Utility.get_path(PATHS["keys"], ["server.key"])
@@ -55,6 +56,7 @@ class Server:
         self.id: int = 0
         self.clients: List[Context] = [None, None]
         self.database: Database = Database()
+        self.client_slots: int = 0
 
     def get_secure_socket(self) -> SSLSocket:
         """Returns a secure socket wrapped with a TLS protection layer.
@@ -80,6 +82,7 @@ class Server:
         """
 
         self.clients[id] = Context(connection)
+        self.client_slots |= 1 << id
 
         self.send(connection, {"type": "server_assign_id", "id": id})
         self.id += 1
@@ -156,7 +159,7 @@ class Server:
             message: the message to be sent to the receiver
         """
 
-        if self.clients[1] is None:
+        if not self.check_all_clients_slots_taken():
             self.database.create_message("client", message, self.clients[id].username)
             Logger.warn("Server: Second user has not joined the server yet")
             return
@@ -179,22 +182,25 @@ class Server:
 
         connection = self.clients[id].connection
 
-        while True:
-            data = self.receive(connection)
+        try:
+            while True:
+                data = self.receive(connection)
 
-            if not data:
-                break
+                if not data:
+                    break
 
-            data = json.loads(data.decode("utf-8"))
+                data = json.loads(data.decode("utf-8"))
 
-            if not self.check_data_format(data):
-                break
+                if not self.check_data_format(data):
+                    break
 
-            self.handle_client_data(id, data)
-            Logger.info(f"Server: Received data from client: {data}")
+                self.handle_client_data(id, data)
+                Logger.info(f"Server: Received data from client: {data}")
+        finally:
+            self.disconnect_client(id, connection)
 
-        connection.close()
-        Logger.info(f"Server: Closed client {id} connection.")
+            if self.client_slots == 0:
+                self.disconnect_server()
 
     def send_server_login_error(self, id: int, error: str) -> None:
         """Sends a login error message to the client with the corresponding id.
@@ -210,6 +216,10 @@ class Server:
     def exchange_usernames(self) -> None:
         """Exchange usernames between the first client and the second
         client."""
+
+        if not self.check_all_clients_slots_taken():
+            Logger.warn("Server: There is only one user online")
+            return
 
         for id in range(MAX_CLIENTS):
             data = {"type": "server_exchange_usernames", "username": self.clients[id ^ 1].username}
@@ -234,6 +244,10 @@ class Server:
             id: the sender
             message: the message to be sent to the receiver
         """
+
+        if not self.check_all_clients_slots_taken():
+            Logger.warn("Server: There is only one user online")
+            return
 
         receiver_id = id ^ 1
 
@@ -266,6 +280,14 @@ class Server:
                 self.send(client.connection, data)
 
         self.database.create_message(role, message)
+
+    def check_all_clients_slots_taken(self) -> bool:
+        """Check if all client slots are taken.
+
+        Returns: the validity of the check
+        """
+
+        return self.client_slots == (1 << MAX_CLIENTS) - 1
 
     def check_data_format(self, data: Any) -> bool:
         """Check if the data sent from the client is valid or not. It should
@@ -402,33 +424,80 @@ class Server:
         will also be closed.
         """
 
-        Logger.info(f"Server: Listening for connections on {self.__HOST}:{self.__PORT}")
+        address = f"{self.__HOST}:{self.__PORT}"
+
+        Logger.info(f"Server: Listening for connections on {address}")
         self.socket.bind((self.__HOST, self.__PORT))
-        self.socket.listen(2)
+        self.socket.listen(MAX_CLIENTS)
 
         try:
             while True:
-                connection, address = self.socket.accept()
+                try:
+                    connection, address = self.socket.accept()
 
-                if self.id == 2:
-                    Logger.error("Server: Only a maximum of two clients can be connected")
-                    continue
+                    if self.id == MAX_CLIENTS:
+                        Logger.error("Server: Only a maximum of two clients can be connected")
+                        continue
 
-                self.add_client(self.id, connection)
-                Logger.info(f"Server: Client connection from {address}")
+                    self.add_client(self.id, connection)
+                    Logger.info(f"Server: Client connection from {address}")
+                except socket.error:
+                    break
+        except KeyboardInterrupt:
+            Logger.info("Server: Server connection was closed manually via keyboard interrupt")
         finally:
-            self.disconnect_all_connections()
+            self.disconnect_all_clients()
 
-    def disconnect_all_connections(self) -> None:
+    def check_all_clients_disconnected(self) -> bool:
+        """Check if all clients have disconnected.
+
+        Returns: the validity of the check
+        """
+
+        return self.id == MAX_CLIENTS and self.client_slots == 0
+
+    def disconnect_client(self, id: int, connection: SSLSocket) -> None:
+        """Closes a client connection in correspondance to the client id.
+
+        Args:
+            id: the client id
+            connection: the connection to close
+        """
+
+        self.client_slots &= ~(1 << id)
+
+        username = ""
+
+        if self.clients[id] is not None:
+            username = self.clients[id].username
+
+        self.clients[id] = None
+        self.send_server_message_to_clients(f"{username} has left the chat")
+
+        connection.close()
+        Logger.info(f"Server: Client {id} disconnected")
+
+    def disconnect_server(self) -> None:
+        """Disconnects the server connection."""
+
+        if self.socket is None:
+            Logger.warn("CLI: Server is already disconnected")
+            return
+
+        self.socket.shutdown(socket.SHUT_RDWR)
+        self.socket.close()
+        self.socket = None
+
+        Logger.info("Server: Server disconnected")
+
+    def disconnect_all_clients(self) -> None:
         """Disconnects all client connections."""
 
         for id, client in enumerate(self.clients):
             if client is not None:
-                client.connection.close()
-                Logger.info(f"Server: Client {id} disconnected")
+                self.disconnect_client(id, client.connection)
 
-        self.socket.close()
-        Logger.info("Server: Server disconnected")
+        self.disconnect_server()
 
 
 if __name__ == "__main__":
