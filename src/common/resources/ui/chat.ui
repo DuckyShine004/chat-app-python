@@ -130,7 +130,7 @@ QScrollBar::add-line, QScrollBar::sub-line {
 </string>
    </property>
    <property name="text">
-    <string>WAITING FOR THE SECOND USER...</string>
+    <string>WAITING FOR ANOTHER USER...</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'chat.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.7.2
+## Created by: Qt User Interface Compiler version 6.5.3
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -49,7 +49,7 @@ class Ui_Chat(object):
         if not Chat.objectName():
             Chat.setObjectName("Chat")
         Chat.resize(1280, 720)
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(Chat.sizePolicy().hasHeightForWidth())
@@ -58,7 +58,7 @@ class Ui_Chat(object):
         self.scrollArea = QScrollArea(Chat)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollArea.setGeometry(QRect(384, 79, 896, 581))
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
         sizePolicy1.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
@@ -156,8 +156,8 @@ class Ui_Chat(object):
             "}\n"
             ""
         )
-        self.line.setFrameShape(QFrame.Shape.VLine)
-        self.line.setFrameShadow(QFrame.Shadow.Sunken)
+        self.line.setFrameShape(QFrame.VLine)
+        self.line.setFrameShadow(QFrame.Sunken)
         self.line_2 = QFrame(Chat)
         self.line_2.setObjectName("line_2")
         self.line_2.setGeometry(QRect(384, 659, 20, 65))
@@ -168,8 +168,8 @@ class Ui_Chat(object):
             "}\n"
             ""
         )
-        self.line_2.setFrameShape(QFrame.Shape.VLine)
-        self.line_2.setFrameShadow(QFrame.Shadow.Sunken)
+        self.line_2.setFrameShape(QFrame.VLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
         self.message_input = QLineEdit(Chat)
         self.message_input.setObjectName("message_input")
         self.message_input.setGeometry(QRect(400, 670, 810, 40))
@@ -223,8 +223,8 @@ class Ui_Chat(object):
             "    border-bottom: 2px solid #161B27; /* Vertical line with thickness 3px and color white */\n"
             "}"
         )
-        self.line_3.setFrameShape(QFrame.Shape.HLine)
-        self.line_3.setFrameShadow(QFrame.Shadow.Sunken)
+        self.line_3.setFrameShape(QFrame.HLine)
+        self.line_3.setFrameShadow(QFrame.Sunken)
         self.label_3 = QLabel(Chat)
         self.label_3.setObjectName("label_3")
         self.label_3.setGeometry(QRect(20, 20, 271, 40))
@@ -248,7 +248,7 @@ class Ui_Chat(object):
 
     def retranslateUi(self, Chat):
         Chat.setWindowTitle(QCoreApplication.translate("Chat", "Form", None))
-        self.chat_label.setText(QCoreApplication.translate("Chat", "WAITING FOR THE SECOND USER...", None))
+        self.chat_label.setText(QCoreApplication.translate("Chat", "WAITING FOR ANOTHER USER...", None))
         self.label_2.setText("")
         self.message_input.setPlaceholderText(QCoreApplication.translate("Chat", "Type a message", None))
         self.send_button.setText("")
