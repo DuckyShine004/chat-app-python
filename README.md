@@ -44,9 +44,9 @@ To run the project, simply follow the instructions as listed below:
    ```sh
    pip install -r requirements_unspecified.txt
    ```
-5. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows.)   
+5. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows. Also run from the root directory of the project)   
    ```sh
-   python src/server/server.py
+   python -m src.server.server
    ```
 6. In a new terminal, run the client by executing
    ```sh
