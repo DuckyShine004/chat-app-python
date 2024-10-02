@@ -38,7 +38,7 @@ To run the project, simply follow the instructions as listed below:
    ```
 3. Activate the virtual environment you have just created (find the equivalent command if you are on Windows)
    ```sh
-   .venv/bin/activate
+   source .venv/bin/activate
    ```
 4. Before installing dependencies, upgrade pip, setuptools, and wheel by running
    ```sh
