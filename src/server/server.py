@@ -123,6 +123,7 @@ class Server:
             self.send_messages_to_second_client()
             self.exchange_usernames()
 
+        self.database.update_user_online_status(username, True)
         self.send_server_message_to_clients(f"{username} joined the chat")
 
     def handle_client_signup(self, id: int, username: str, password: str) -> None:
@@ -197,7 +198,7 @@ class Server:
         finally:
             self.disconnect_client(id, connection)
 
-            if self.client_slots == 0:
+            if self.check_all_clients_disconnected():
                 self.disconnect_server()
 
     def send_server_login_error(self, id: int, error: str) -> None:
@@ -468,6 +469,7 @@ class Server:
 
         if self.clients[id] is not None:
             username = self.clients[id].username
+            self.database.update_user_online_status(username, False)
 
         self.clients[id] = None
         self.send_server_message_to_clients(f"{username} has left the chat")

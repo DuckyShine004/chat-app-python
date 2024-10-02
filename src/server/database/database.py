@@ -120,6 +120,20 @@ class Database:
 
         return collection.fetch(collection.last_record_id())
 
+    def update_user_online_status(self, username: str, status: bool) -> None:
+        """Sets a user's online status to the actual status. For example, if a
+        user disconnects, then their status should be set to False.
+
+        Args:
+            username: the user's username
+            status: the status to be set
+        """
+
+        user = self.get_username(username)[0]
+        user["online"] = status
+
+        self.database.collection("users").update(user["__id"], user)
+
     def output_collection(self, collection_name: str) -> None:
         """Displays all records in all collections. This should only be used
         for debugging purposes.
