@@ -36,23 +36,27 @@ To run the project, simply follow the instructions as listed below:
    ```sh
    python -m venv .venv
    ```
-3. Before installing dependencies, upgrade pip, setuptools, and wheel by running
+3. Activate the virtual environment you have just created (find the equivalent command if you are on Windows)
+   ```sh
+   .venv/bin/activate
+   ```
+4. Before installing dependencies, upgrade pip, setuptools, and wheel by running
    ```sh
    pip install --upgrade pip setuptools wheel
    ```
-4. Install the required packages
+5. Install the required packages
    ```sh
    pip install -r requirements_unspecified.txt
    ```
-5. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows. Also run from the root directory of the project)   
+6. To simulate a 1-1 client chat connection, start by running the server. (Note: The following assumes you are on a Unix/Linux system. Adjust the path accordingly if you're on Windows. Also run from the root directory of the project)   
    ```sh
    python -m src.server.server
    ```
-6. In a new terminal, run the client by executing
+7. In a new terminal, run the client by executing
    ```sh
    python main.py
    ```
-7. Repeat step 6 to connect the second client to the server
+8. Repeat step 7 to connect the second client to the server
 
 ## Contributions
 

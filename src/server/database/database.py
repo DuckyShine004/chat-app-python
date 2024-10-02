@@ -28,7 +28,7 @@ class Database:
 
         self.database = unqlite.UnQLite(self.__DATABASE_FILE)
 
-        self.clear_collections()
+        # self.clear_collections()
         self.create_collections()
 
     def create_collections(self) -> None:
