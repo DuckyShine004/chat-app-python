@@ -25,6 +25,8 @@ This Python-based chat application uses TCP sockets secured by the TLS protocol 
 To guarantee a seamless experience moving forward, please read and follow the installation instructions carefully.
 
 ### Installation
+> [!NOTE]
+> The `python` command may not be recognised because it wasn’t set as an alias for `python3` during installation. If your system doesn’t recognise the `python` command, use `python3` instead. Similarly, if `pip` isn’t recognised, replace it with `pip3`.
 
 To run the project, simply follow the instructions as listed below:
 
