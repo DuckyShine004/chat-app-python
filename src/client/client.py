@@ -50,7 +50,8 @@ class Client:
         self.ui: UI = None
 
     def get_secure_socket(self) -> SSLSocket:
-        """Returns a secure socket wrapped with a TLS protection layer.
+        """Returns a secure socket wrapped with a TLS protection layer. It also
+        allows for self-signed certificates to be verified.
 
         Returns: a secure socket wrapped with a protection layer; TLS
         """

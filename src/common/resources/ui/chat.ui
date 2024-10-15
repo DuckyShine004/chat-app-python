@@ -317,6 +317,27 @@ QPushButton:hover {
     <string>MESSAGES</string>
    </property>
   </widget>
+  <widget class="QLabel" name="message_size_label">
+   <property name="geometry">
+    <rect>
+     <x>1100</x>
+     <y>680</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background-color: transparent;
+color: #8b8d93;
+font-size: 14px;</string>
+   </property>
+   <property name="text">
+    <string>0/1000</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>scrollArea</tabstop>

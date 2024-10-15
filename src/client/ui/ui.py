@@ -26,10 +26,12 @@ from src.client.ui.custom.message_widget import MessageWidget
 
 from src.common.constants.constants import (
     ICONS,
+    MAXIMUM_MESSAGE_LENGTH,
     WINDOW_HEIGHT,
     WINDOW_TITLE,
     WINDOW_WIDTH,
 )
+from src.common.utilities.logger import Logger
 
 if TYPE_CHECKING:
     from src.client.client import Client
@@ -161,6 +163,9 @@ class UI(QMainWindow):
 
         self.chat.send_button.clicked.connect(self.handle_messaging)
 
+        self.chat.message_input.setMaxLength(MAXIMUM_MESSAGE_LENGTH)
+        self.chat.message_input.setTextMargins(0, 0, 75, 0)
+        self.chat.message_input.textChanged.connect(self.handle_message_length)
         self.chat.message_input.returnPressed.connect(self.handle_messaging)
 
         self.chat.scrollArea.setWidgetResizable(True)
@@ -334,6 +339,18 @@ class UI(QMainWindow):
             return
 
         self.show_chat_page()
+
+    def handle_message_length(self) -> None:
+        """Handles the message length of the input message."""
+
+        message_length = len(self.chat.message_input.text())
+
+        self.chat.message_size_label.setText(f"{message_length}/{MAXIMUM_MESSAGE_LENGTH}")
+
+        if message_length == MAXIMUM_MESSAGE_LENGTH:
+            self.chat.message_size_label.setStyleSheet("background-color: transparent; color: #ff6d79; font-size: 14px;")
+        else:
+            self.chat.message_size_label.setStyleSheet("background-color: transparent; color: #8b8d93; font-size: 14px;")
 
     def handle_messaging(self) -> None:
         """Handles the client sending messages to other clients."""

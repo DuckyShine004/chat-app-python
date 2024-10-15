@@ -39,7 +39,7 @@ class MessageWidget(QWidget):
         self.setLayout(layout)
         self.set_css(sender)
 
-        message_label = QLabel(Utility.get_wrapped_text(message, font, 1000))
+        message_label = QLabel(Utility.get_wrapped_text(message, font, 600))
         message_label.setWordWrap(True)
         message_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         message_label.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred))

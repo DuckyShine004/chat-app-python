@@ -30,6 +30,8 @@ WINDOW_TITLE = "Shiny Duck"
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
+MAXIMUM_MESSAGE_LENGTH = 1000
+
 ICONS = [":/icons/ui/icons/eye_closed.png", ":/icons/ui/icons/eye_opened.png"]
 
 # RSA
