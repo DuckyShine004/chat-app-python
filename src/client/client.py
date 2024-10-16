@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from src.common.utilities.logger import Logger
 from src.common.utilities.utility import Utility
 
-from src.common.constants.constants import CLIENT_TYPES, HEADER_LENGTH, PATHS
+from src.common.constants.constants import CIPHER, CLIENT_TYPES, HEADER_LENGTH, PATHS
 
 if TYPE_CHECKING:
     from src.client.ui.ui import UI
@@ -60,6 +60,7 @@ class Client:
 
         context = SSLContext(PROTOCOL_TLS_CLIENT)
         context.load_verify_locations(self.__CERTIFICATE)
+        context.set_ciphers(CIPHER)
 
         return context.wrap_socket(unsecure_socket, server_hostname=self.__HOST)
 
