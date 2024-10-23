@@ -6,7 +6,7 @@ import struct
 import socket
 import threading
 
-from ssl import SSLContext, SSLSocket, PROTOCOL_TLS_SERVER
+from ssl import PROTOCOL_TLSv1_2, SSLContext, SSLSocket
 
 from typing import Any, List, Union
 
@@ -64,11 +64,12 @@ class Server:
 
         unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        context = SSLContext(PROTOCOL_TLS_SERVER)
+        context = SSLContext(PROTOCOL_TLSv1_2)
         context.load_cert_chain(certfile=self.__CERTIFICATE, keyfile=self.__KEY)
+        context.load_verify_locations(self.__CERTIFICATE)
         context.set_ciphers(CIPHER)
 
-        return context.wrap_socket(unsecure_socket)
+        return context.wrap_socket(unsecure_socket, server_side=True)
 
     def add_client(self, id: int, connection: SSLSocket) -> None:
         """Handles adding a new client connection. It sends the id assigned to
@@ -424,8 +425,8 @@ class Server:
         """
 
         address = f"{self.__HOST}:{self.__PORT}"
-
         Logger.info(f"Server: Listening for connections on {address}")
+
         self.socket.bind((self.__HOST, self.__PORT))
         self.socket.listen(MAX_CLIENTS)
 

@@ -9,7 +9,7 @@ import socket
 import struct
 import threading
 
-from ssl import SSLSocket, SSLContext, PROTOCOL_TLS_CLIENT
+from ssl import PROTOCOL_TLSv1_2, SSLSocket, SSLContext
 
 from typing import Any, List, Union, TYPE_CHECKING
 
@@ -58,7 +58,7 @@ class Client:
 
         unsecure_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        context = SSLContext(PROTOCOL_TLS_CLIENT)
+        context = SSLContext(PROTOCOL_TLSv1_2)
         context.load_verify_locations(self.__CERTIFICATE)
         context.set_ciphers(CIPHER)
 
