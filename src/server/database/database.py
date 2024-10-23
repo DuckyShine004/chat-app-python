@@ -129,7 +129,12 @@ class Database:
             status: the status to be set
         """
 
-        user = self.get_username(username)[0]
+        users = self.get_username(username)
+
+        if not users:
+            return
+
+        user = users[0]
         user["online"] = status
 
         self.database.collection("users").update(user["__id"], user)

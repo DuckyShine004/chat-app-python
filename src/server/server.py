@@ -484,7 +484,12 @@ class Server:
             Logger.warn("CLI: Server is already disconnected")
             return
 
-        self.socket.shutdown(socket.SHUT_RDWR)
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            Logger.warn("CLI: Server socket is already shutdown")
+            return
+
         self.socket.close()
         self.socket = None
 
