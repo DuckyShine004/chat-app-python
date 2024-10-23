@@ -43,7 +43,7 @@ htmlcov/
 .python-version
 .coverage
 .coverage.*
-.cache
+.cache/logs
 nosetests.xml
 coverage.xml
 *.cover
