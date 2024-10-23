@@ -36,7 +36,7 @@ ICONS = [":/icons/ui/icons/eye_closed.png", ":/icons/ui/icons/eye_opened.png"]
 
 # RSA
 KEY_LENGTH = 1 << 11
-CIPHER = "AES128-SHA"
+CIPHER = "ECDHE-RSA-AES256-GCM-SHA384"
 
 # COLOURS
 RED = (255, 0, 0)
