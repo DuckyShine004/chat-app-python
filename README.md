@@ -60,26 +60,12 @@ To run the project, simply follow the instructions as listed below:
    ```
 8. Repeat step 7 to connect the second client to the server
 
-## Contributions
-
-Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. Don't forget to give the project a star! (⭐)
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b Feat/NewFeature`)
-3. Commit your Changes (`git commit -m 'Feat: Added New Feature'`)
-4. Push to the Branch (`git push origin Feat/NewFeature`)
-5. Open a Pull Request
+## Report and Demo
+The report and demo video are located in the `report` directory, along with the corresponding Wireshark captures.
 
 ## License
 
 Distributed under the `MIT License`. See `LICENSE.txt` for more information.
 
-## Contact
-
-Gallon Zhou: [Linkedin](https://www.linkedin.com/in/gallon-zhou-a3739b278/)
-
-Project Link: [https://github.com/DuckyShine004/chat-app-python](https://github.com/DuckyShine004/chat-app-python)
 
 
