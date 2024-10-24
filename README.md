@@ -38,9 +38,10 @@ To run the project, simply follow the instructions as listed below:
    ```sh
    python -m venv .venv
    ```
-3. Activate the virtual environment you have just created (find the equivalent command if you are on Windows)
+3. Activate the virtual environment you have just created
    ```sh
-   source .venv/bin/activate
+   source .venv/bin/activate # Unix/Linux
+   .venv\Scripts\activate # Windows
    ```
 4. Before installing dependencies, upgrade pip, setuptools, and wheel by running
    ```sh
@@ -54,7 +55,7 @@ To run the project, simply follow the instructions as listed below:
    ```sh
    python -m src.server.server
    ```
-7. In a new terminal, run the client by executing
+7. In a new terminal with the activated virtual environment, run the client by executing
    ```sh
    python main.py
    ```
